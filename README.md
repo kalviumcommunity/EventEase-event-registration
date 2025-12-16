@@ -68,6 +68,8 @@ Many students and small organizations struggle to manage event registrations eff
 
 ## 🗂️ Project Structure
 
+---
+
 eventease/
 │
 ├── app/ # Next.js App Router
@@ -80,9 +82,6 @@ eventease/
 ├── Dockerfile
 ├── README.md
 └── package.json
-
-
-
 ---
 
 ## 🧪 Testing Strategy
