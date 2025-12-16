@@ -55,59 +55,56 @@ Docker
 GitHub Actions (CI/CD)
 AWS / Azure
 
-🗂️ Project Structure
-
-eventease/
-│
-├── app/                 # Next.js App Router
-├── components/          # Reusable UI components
-├── lib/                 # Utilities & configurations
-├── prisma/              # Database schema & migrations
-├── public/              # Static assets
-├── styles/              # Global styles
-├── .github/workflows/   # CI/CD pipelines
-├── Dockerfile
-├── README.md
-└── package.json
 
 
-Testing
+🧪 Testing
 
 Unit testing for backend API routes
+
 Manual testing for:
 
 Authentication flows
+
 Event creation
+
 Event registration
+
 Dashboard functionality
 
-Deployment
+🚀 Deployment
 
 Dockerize the application
+
 Configure CI/CD using GitHub Actions
+
 Deploy to AWS or Azure
+
 Verify production build and API connectivity
 
-Functional Requirements
+⚙️ Functional Requirements
 
 Users can securely register and log in
+
 Users can create and browse events
+
 Users can register for events
+
 Users can view registered events
 
-Non-Functional Requirements
+🛡️ Non-Functional Requirements
 
 Secure password storage
+
 API response time under 300ms
+
 Supports at least 100 concurrent users
+
 Reliable data persistence
 
 📌 Notes
 
 Designed following modern full-stack development practices
+
 Focused on clean architecture and maintainability
+
 MVP-oriented and production-ready
-
-GitHub Actions (CI/CD)
-
-AWS / 
