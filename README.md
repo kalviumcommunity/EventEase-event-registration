@@ -82,6 +82,7 @@ eventease/
 ├── Dockerfile
 ├── README.md
 └── package.json
+
 ---
 
 ## 🧪 Testing Strategy
