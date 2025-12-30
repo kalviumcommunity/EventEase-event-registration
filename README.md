@@ -1,110 +1,39 @@
-🎟️ EventEase – Event Registration System
 
-EventEase is a full-stack Event Registration System that allows users to create events, discover upcoming events, and register seamlessly.
-The application is designed to be simple, secure, and scalable, suitable for students, communities, and small organizations.
+=======
+# EventEase – Project Initialization
 
-🚀 Overview
+EventEase is a full-stack web application designed to simplify event creation, discovery, and registration.  
+This repository contains the initial project setup using **Next.js with TypeScript**, forming the foundation for all future development.
 
-Managing event registrations manually is inefficient and error-prone. EventEase provides a centralized platform where users can manage events and registrations with ease.
+---
 
-✨ Features
-🔐 Authentication
-
-User signup and login
-
-Secure password hashing
-
-Protected routes for authenticated users
-
-📅 Event Management
-
-Create new events
-
-View all available events
-
-View detailed event information
-
-📝 Event Registration
-
-Register for events
-
-Prevent duplicate registrations
-
-View registered events
-
-📊 Dashboard
-
-Personalized dashboard for logged-in users
-
-Overview of created and registered events
-
-🏗️ Tech Stack
-Frontend
-
-Next.js (TypeScript)
-React
-Tailwind CSS
-
-Backend
-
-Next.js API Routes
-
-DevOps & Tools
-
-Docker
-GitHub Actions (CI/CD)
-AWS / Azure
+## Folder Structure
 
 
+### Folder Purpose
 
-🧪 Testing
+- **app/**  
+  Handles routing, layouts, and page-level components using the App Router for scalability and performance.
 
-Unit testing for backend API routes
+- **components/**  
+  Stores reusable UI elements (buttons, forms, modals) to avoid duplication and improve maintainability.
 
-Manual testing for:
+- **lib/**  
+  Contains helper functions, constants, API utilities, and configuration logic to keep business logic cleanly separated.
 
-Authentication flows
+---
 
-Event creation
+## Naming Conventions
 
-Event registration
+- Components use **PascalCase** (e.g., `EventCard.tsx`)
+- Utility files use **camelCase** (e.g., `formatDate.ts`)
+- Folder names are lowercase and descriptive
 
-Dashboard functionality
+---
 
-🚀 Deployment
+## Setup Instructions
 
-Dockerize the application
-
-Configure CI/CD using GitHub Actions
-
-Deploy to AWS or Azure
-
-Verify production build and API connectivity
-
-⚙️ Functional Requirements
-
-Users can securely register and log in
-
-Users can create and browse events
-
-Users can register for events
-
-Users can view registered events
-
-🛡️ Non-Functional Requirements
-
-Secure password storage
-
-API response time under 300ms
-
-Supports at least 100 concurrent users
-
-Reliable data persistence
-
-📌 Notes
-
-Designed following modern full-stack development practices
-
-Focused on clean architecture and maintainability
-
-MVP-oriented and production-ready
+### Installation
+```bash
+npm install
+>>>>>>> sprint-1-init
