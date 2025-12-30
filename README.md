@@ -1,5 +1,5 @@
-
 =======
+
 # EventEase – Project Initialization
 
 EventEase is a full-stack web application designed to simplify event creation, discovery, and registration.  
@@ -8,7 +8,6 @@ This repository contains the initial project setup using **Next.js with TypeScri
 ---
 
 ## Folder Structure
-
 
 ### Folder Purpose
 
@@ -34,6 +33,9 @@ This repository contains the initial project setup using **Next.js with TypeScri
 ## Setup Instructions
 
 ### Installation
+
 ```bash
 npm install
 >>>>>>> sprint-1-init
+```
+For Next.js App Router compatibility, React is declared as a global in ESLint configuration to support the automatic JSX runtime introduced in modern React versions.
