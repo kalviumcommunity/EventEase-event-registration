@@ -15,20 +15,21 @@ export default [
   },
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
-  languageOptions: {
-  parser: tseslint.parser,
-  parserOptions: {
-    project: './tsconfig.json',
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.json',
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        React: 'readonly',
+        process: 'readonly',
+      },
     },
-  },
-  globals: {
-    React: 'readonly',
-  },
-},
 
     plugins: {
       '@typescript-eslint': tseslint.plugin,
