@@ -154,6 +154,25 @@ Client-side access is limited to variables prefixed with NEXT_PUBLIC_.
 
 ---
 
+### Branching Strategy and Code Review Process
+
+EventEase follows a structured Git workflow to ensure code quality, collaboration, and long-term maintainability.
+
+Branching Strategy
+
+The project uses a clear and consistent branch naming convention:
+
+feature/<feature-name> for new features
+
+fix/<bug-name> for bug fixes
+
+chore/<task-name> for maintenance tasks
+
+docs/<update-name> for documentation updates
+
+The main branch always represents stable, production-ready code.
+All changes are introduced through pull requests.
+
 ## Setup Instructions
 
 Installation:
