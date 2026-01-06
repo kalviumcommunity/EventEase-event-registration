@@ -154,30 +154,30 @@ Client-side access is limited to variables prefixed with NEXT_PUBLIC_.
 
 ---
 
+### Branching Strategy and Code Review Process
+
+EventEase follows a structured Git workflow to ensure code quality, collaboration, and long-term maintainability.
+
+Branching Strategy
+
+The project uses a clear and consistent branch naming convention:
+
+feature/<feature-name> for new features
+
+fix/<bug-name> for bug fixes
+
+chore/<task-name> for maintenance tasks
+
+docs/<update-name> for documentation updates
+
+The main branch always represents stable, production-ready code.
+All changes are introduced through pull requests.
+
 ## Setup Instructions
 
 Installation:
 npm install
+>>>>>>> sprint-1-init
+```
 
-Run locally:
-npm run dev
-
-Open:
-http://localhost:3000
-
-Lint and format:
-npm run lint
-npm run format
-
----
-
-## Scalability and Future Development
-
-The current setup is designed to scale naturally as features such as authentication, event management, dashboards, and analytics are added in future sprints.
-
----
-
-## Final Note
-
-EventEase is developed incrementally with a strong focus on security, code quality, maintainability, and scalability.  
-All configurations are intentionally designed to support future full-stack development without major refactoring.
+For Next.js App Router compatibility, React is declared as a global in ESLint configuration to support the automatic JSX runtime introduced in modern React versions.
