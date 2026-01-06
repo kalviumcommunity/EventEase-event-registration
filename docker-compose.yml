@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: eventease-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    depends_on:
+      - db
+      - redis
+    networks:
+      - eventease-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: eventease-db
+    restart: always
+    environment:
+      POSTGRES_USER: eventease
+      POSTGRES_PASSWORD: eventease_password
+      POSTGRES_DB: eventease_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - eventease-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: eventease-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - eventease-network
+
+volumes:
+  postgres_data:
+
+networks:
+  eventease-network:
+    driver: bridge
