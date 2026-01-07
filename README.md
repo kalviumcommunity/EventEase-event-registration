@@ -173,11 +173,17 @@ docs/<update-name> for documentation updates
 The main branch always represents stable, production-ready code.
 All changes are introduced through pull requests.
 
-## Setup Instructions
 
-Installation:
-npm install
->>>>>>> sprint-1-init
 ```
 
 For Next.js App Router compatibility, React is declared as a global in ESLint configuration to support the automatic JSX runtime introduced in modern React versions.
+
+
+| Relationship         | Type                            |
+| -------------------- | ------------------------------- |
+| User → Event         | One-to-Many                     |
+| User → Registration  | One-to-Many                     |
+| Event → Registration | One-to-Many                     |
+| User ↔ Event         | Many-to-Many (via Registration) |
+
+
