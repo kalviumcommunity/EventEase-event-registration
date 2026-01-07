@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  role         UserRole       @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  events       Event[]        @relation("UserEvents")
+  registrations Registration[]
+
+  @@index([email])
+}
+
+model Event {
+  id           String         @id @default(uuid())
+  title        String
+  description  String
+  date         DateTime
+  location     String
+  capacity     Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  organizerId  String
+  organizer    User           @relation("UserEvents", fields: [organizerId], references: [id], onDelete: Cascade)
+
+  registrations Registration[]
+
+  @@index([date])
+  @@index([organizerId])
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+}
+
+// Notes:
+// - Normalization: `User`, `Event`, and `Registration` are split to avoid
+//   duplicated user/event data and to model the many-to-many relationship
+//   between users and events via the join table `Registration`.
+// - `User.email` is unique to enforce one account per email and is indexed
+//   for frequent lookups during auth and user retrieval.
+// - `Registration` uses a composite unique constraint (`userId`, `eventId`)
+//   to prevent duplicate registrations for the same user/event.
+// - `onDelete: Cascade` is applied on relations where removing a parent
+//   entity (User or Event) should remove related registrations to keep
+//   referential integrity and avoid orphaned rows.
+// - Additional indexes are added for `Event.date` and `Event.organizerId`
+//   because the app will commonly query upcoming events and events by organizer.
