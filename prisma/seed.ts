@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 
-// For Prisma v7, the client needs either an adapter or to use a specific engine configuration
-// Since we're using the binary engine, we instantiate without extra options
 const prisma = new PrismaClient({
   log: ['error'],
 });
