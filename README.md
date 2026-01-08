@@ -186,4 +186,40 @@ For Next.js App Router compatibility, React is declared as a global in ESLint co
 | Event → Registration | One-to-Many                     |
 | User ↔ Event         | Many-to-Many (via Registration) |
 
+## Prisma Integration
+
+This project uses Prisma (v7) as the ORM for PostgreSQL. The repository is configured to
+read the database connection from the `DATABASE_URL` environment variable (set in `.env.local`) and
+generate a typed Prisma Client using `npx prisma generate`.
+
+- **Singleton client:** A single, reusable Prisma Client instance is exported from `src/lib/prisma.ts`.
+  This avoids creating multiple clients during Next.js dev hot-reloads which can exhaust DB connections.
+- **Server test route:** A simple server-side API is available at `/api/prisma-test` (file: `src/app/api/prisma-test/route.ts`) that
+  runs a safe `findMany()` on the `Event` model, logs the result on the server, and returns JSON for quick verification.
+- **Type safety:** Prisma generates fully typed models in `@prisma/client`, enabling TypeScript inference for queries and model shapes.
+
+Quick commands
+
+1. Ensure `.env.local` contains a valid `DATABASE_URL`, for example:
+
+```
+DATABASE_URL="postgres://postgres:password@localhost:5432/eventdb"
+```
+
+2. Generate the Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+3. Run the app and test the route:
+
+```bash
+npm run dev
+# then visit http://localhost:3000/api/prisma-test or use curl
+```
+
+If the DB is reachable you'll see a server console log like `Prisma test: fetched events count = N` and a JSON response showing the count.
+
+
 
