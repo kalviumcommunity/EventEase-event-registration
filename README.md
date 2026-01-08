@@ -198,6 +198,30 @@ generate a typed Prisma Client using `npx prisma generate`.
   runs a safe `findMany()` on the `Event` model, logs the result on the server, and returns JSON for quick verification.
 - **Type safety:** Prisma generates fully typed models in `@prisma/client`, enabling TypeScript inference for queries and model shapes.
 
+## Completed Prisma Integration (Jan 8, 2026)
+
+✅ **Singleton client:** Implemented and exported from `src/lib/prisma.ts` (hot-reload safe).  
+✅ **Server test route:** Implemented at `src/app/api/prisma-test/route.ts` for quick DB verification.  
+✅ **Migrations & schema:** Initial schema applied; migrations tracked in `prisma/migrations/`.  
+✅ **Idempotent TypeScript seed:** `prisma/seed.ts` created; runtime fix applied.  
+✅ **Fallback SQL seed:** `prisma/seed-pg.js` verified working; populated demo data successfully.  
+✅ **Dark-themed landing page:** EventEase home page created with event registration CTA and brand styling.
+
+### Runtime Issue Resolution
+
+Prisma v7 was initially generated with a remote/client engine, causing:
+```
+PrismaClientConstructorValidationError: Using engine type "client" requires either "adapter" or "accelerateUrl"...
+```
+
+**Fix applied (Option 1):**
+- Cleaned generated Prisma runtime artifacts
+- Regenerated client with `PRISMA_CLIENT_ENGINE_TYPE=binary` to force binary engine mode
+- TypeScript seed (`npx tsx prisma/seed.ts`) now works without adapter/accelerateUrl
+- Binary engine uses native query compilation and connects via DATABASE_URL
+
+**Fallback available:** `prisma/seed-pg.js` (plain SQL with `pg` package) can seed the DB if needed.
+
 Quick commands
 
 1. Ensure `.env.local` contains a valid `DATABASE_URL`, for example:
@@ -220,6 +244,88 @@ npm run dev
 ```
 
 If the DB is reachable you'll see a server console log like `Prisma test: fetched events count = N` and a JSON response showing the count.
+
+## Database Migrations & Seeding
+
+This project uses Prisma (v7) to manage database schema migrations and seeding.
+
+Migration workflow (initial)
+
+- Create the initial migration locally (runs SQL against your dev database and
+  writes migration files to `prisma/migrations/`):
+
+```bash
+npx prisma migrate dev --name init_schema
+```
+
+- This command will:
+  - Compare your `schema.prisma` to the database and generate SQL to bring the
+    database schema in sync.
+  - Create a timestamped folder under `prisma/migrations/` containing the SQL.
+  - Update Prisma's migration history so future migrations are tracked.
+
+Making future schema changes
+
+- When you change the Prisma schema, create a new migration with a meaningful
+  name (for example `add_registration_indexes`):
+
+```bash
+npx prisma migrate dev --name add_registration_indexes
+```
+
+- Prisma records each migration in the `prisma/migrations/` directory and in
+  the database migration table so it can track what has been applied.
+
+Resetting or rolling back (local/dev only)
+
+- To reset your local development database and re-apply all migrations and the
+  seed script, use:
+
+```bash
+npx prisma migrate reset
+```
+
+- `migrate reset` drops and recreates the database schema and then runs the
+  migrations from scratch. Use this only on local/dev databases — NEVER run
+  this against production as it will erase data.
+
+Seeding the database
+
+- The project includes an idempotent TypeScript seed script at `prisma/seed.ts`.
+  It uses `upsert` and existence checks so it is safe to run multiple times
+  without creating duplicates.
+
+- To run the seed manually:
+
+```bash
+npm run prisma:seed
+```
+
+- Prisma is configured in `package.json` to run the seed via `ts-node` when
+  invoking `prisma db seed` or when running the configured seed script.
+
+Verifying seeded data
+
+- Prisma Studio (visual):
+  - Run `npx prisma studio` and inspect `User`, `Event`, and `Registration`.
+- Programmatic check (example):
+  - Use the test API `GET /api/prisma-test` which runs a small `findMany()`
+    against `Event` and returns a JSON count — you should see the demo data.
+- Successful output:
+  - Seed script prints `✓ Seeding completed successfully!` and lists the
+    inserted/ensured records.
+
+Notes & best practices
+
+- Why migrations are versioned: migration files are timestamped and stored so
+  teams can review schema changes, roll forward safely, and apply them in CI
+  or production in a controlled manner.
+- How seed data helps: seeds provide reproducible test data for dev and CI,
+  making it easier to develop features and write tests against predictable
+  datasets.
+- Protecting production data: avoid `migrate reset` in production; instead use
+  controlled `prisma migrate deploy` flows and database backups + staging
+  environments for testing destructive changes.
 
 
 
