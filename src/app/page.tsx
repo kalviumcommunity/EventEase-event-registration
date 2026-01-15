@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 export default function Home() {
   return (
     // Main background: Deep black with a subtle radial gradient for depth
@@ -20,7 +18,7 @@ export default function Home() {
       <main className="relative flex flex-1 flex-col items-center justify-center px-6 pt-32 text-center">
         
         {/* Background Decorative Glow */}
-        <div className="absolute top-1/4 -z-10 h-[300px] w-[300px] rounded-full bg-indigo-600/20 blur-[120px]"></div>
+        <div className="absolute top-1/4 -z-10 h-[300px] w-75 rounded-full bg-indigo-600/20 blur-[120px]"></div>
         <div className="absolute bottom-1/4 -z-10 h-[250px] w-[250px] rounded-full bg-purple-600/10 blur-[100px]"></div>
 
         {/* Hero Content */}
@@ -31,7 +29,7 @@ export default function Home() {
           
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl">
             Host events that <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               people actually love.
             </span>
           </h1>

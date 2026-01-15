@@ -1,5 +1,3 @@
-import prisma from '../../../lib/prisma';
-
 /**
  * Simple server-side test route to verify Prisma connectivity.
  * - Runs on the server (Next.js App Router API route).
@@ -12,6 +10,9 @@ import prisma from '../../../lib/prisma';
 
 export async function GET() {
   try {
+    // Dynamically import Prisma to avoid initialization at build time
+    const { default: prisma } = await import('../../../lib/prisma');
+    
     // Fetch up to 10 events to exercise a simple read query.
     const events = await prisma.event.findMany({ take: 10 });
 
