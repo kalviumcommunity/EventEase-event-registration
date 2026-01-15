@@ -19,7 +19,86 @@ A simple, secure, and reliable digital solution is required to manage events and
 
 ---
 
-## Objectives
+## API Documentation
+
+## API Route Hierarchy
+- **/api/users**
+  - `GET` - List users
+  - `POST` - Create a new user
+  - `PUT` - Update a user
+  - `DELETE` - Delete a user
+
+- **/api/events**
+  - `GET` - List events
+  - `POST` - Create a new event
+  - `PUT` - Update an event
+  - `DELETE` - Delete an event
+
+- **/api/registrations**
+  - `GET` - List registrations
+  - `POST` - Create a new registration
+  - `PUT` - Update a registration
+  - `DELETE` - Delete a registration
+
+## Supported HTTP Methods
+- **GET**: Retrieve a list of resources with pagination and filtering options.
+- **POST**: Create a new resource.
+- **PUT**: Update an existing resource.
+- **DELETE**: Remove a resource.
+
+## Sample CURL Commands
+
+### List Users
+```bash
+curl -X GET 'http://localhost:3000/api/users?page=1&limit=10'
+```
+
+### Create User
+```bash
+curl -X POST 'http://localhost:3000/api/users' -H 'Content-Type: application/json' -d '{"name": "John Doe", "email": "john@example.com"}'
+```
+
+### List Events
+```bash
+curl -X GET 'http://localhost:3000/api/events?page=1&limit=10&organizerId=1'
+```
+
+### Create Event
+```bash
+curl -X POST 'http://localhost:3000/api/events' -H 'Content-Type: application/json' -d '{"title": "Event Title", "date": "2026-01-15"}'
+```
+
+### List Registrations
+```bash
+curl -X GET 'http://localhost:3000/api/registrations?page=1&limit=10&userId=1'
+```
+
+### Create Registration
+```bash
+curl -X POST 'http://localhost:3000/api/registrations' -H 'Content-Type: application/json' -d '{"eventId": 1, "userId": 1}'
+```
+
+## Example Success and Error Responses
+- **Success Response**: 
+  ```json
+  {
+      "id": 1,
+      "name": "John Doe"
+  }
+  ```
+- **Error Response**: 
+  ```json
+  {
+      "error": "User not found"
+  }
+  ```
+
+## Pagination Explanation
+- Use `page` and `limit` query parameters to control the number of results returned.
+- Default values are `page=1` and `limit=10`.
+
+## Reflection on RESTful Structure
+Implementing a RESTful API structure improves maintainability and team collaboration by providing a clear and consistent way to interact with resources. It allows for easier understanding of the API's capabilities and promotes best practices in API design.
 
 - Provide secure user authentication  
 - Enable users to create and browse events  
