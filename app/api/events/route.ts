@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
+import { createEventSchema } from '@/lib/schemas/eventSchema';
+import { validateRequest } from '@/lib/schemas/validationUtils';
 
 /**
  * GET /api/events - List events with pagination and filtering
@@ -55,34 +57,48 @@ export async function GET(req: Request) {
 /**
  * POST /api/events - Create a new event
  *
- * Request Body:
- * - title: Event title (required)
- * - description: Event description (optional)
- * - organizerId: ID of the organizer (required)
- * - Other fields based on schema
+ * Request Body (validated with Zod schema):
+ * - title: String, min 3 characters (required)
+ * - description: String, optional
+ * - date: ISO 8601 datetime, must be in future (required)
+ * - location: String, min 2 characters (required)
+ * - capacity: Number, minimum 1 (required)
+ * - organizerId: ID of the organizer, must be positive integer (required)
  *
  * HTTP Status:
  * - 201: Event created successfully
- * - 400: Validation error (missing required fields)
+ * - 400: Validation error (invalid fields or malformed request)
+ * - 409: Conflict (duplicate title or constraint violation)
  * - 500: Database or server error
+ *
+ * Why Zod validation here?
+ * - Validates complex constraints like future dates before database queries
+ * - Ensures capacity is a valid positive number
+ * - Catches missing or invalid organizerId early
+ * - Returns detailed field-level errors for frontend validation display
+ *
+ * Schema reuse benefits:
+ * - Frontend form validation uses the same schema
+ * - Guarantees server and client enforce identical rules
+ * - Reduces validation logic duplication across the codebase
+ * - Easy to update all validation rules from one central location
  *
  * Using sendSuccess with status 201 correctly indicates resource creation,
  * which helps HTTP clients distinguish between updates (200) and creation (201).
  */
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    // Validate request body using Zod schema
+    // Catches invalid data before database layer, reducing query overhead
+    const validation = await validateRequest(req, createEventSchema);
 
-    // Validate required fields before database operation
-    if (!data.title || !data.organizerId) {
-      return sendError(
-        'Title and organizerId are required',
-        ERROR_CODES.MISSING_REQUIRED_FIELD,
-        400
-      );
+    if (!validation.success) {
+      return validation.response!;
     }
 
-    const event = await prisma.event.create({ data });
+    // At this point, data is guaranteed to be valid per createEventSchema
+    // All fields are properly typed, formatted, and validated
+    const event = await prisma.event.create({ data: validation.data });
 
     return sendSuccess(event, 'Event created successfully', 201);
   } catch (error: any) {
