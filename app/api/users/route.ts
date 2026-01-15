@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
+import { createUserSchema, updateUserSchema } from '@/lib/schemas/userSchema';
+import { validateRequest } from '@/lib/schemas/validationUtils';
 
 /**
  * GET /api/users - List users with pagination and filtering
@@ -47,28 +49,37 @@ export async function GET(req: Request) {
 /**
  * POST /api/users - Create a new user
  *
- * Request Body:
- * - email: User email (required)
- * - name: User name (required)
- * - Other fields based on schema
+ * Request Body (validated with Zod schema):
+ * - email: Valid email address (required)
+ * - name: String, min 2 characters (required)
+ * - password: Min 8 characters with uppercase, lowercase, and number (required)
  *
  * Returns 201 (Created) on success, 400 (Bad Request) for validation errors,
  * or 500 (Internal Error) for database issues.
+ *
+ * Why Zod validation here?
+ * - Catches invalid data before database layer
+ * - Returns structured field-level errors
+ * - Ensures data conforms to schema before creation
+ * - Reduces database load from malformed requests
+ *
+ * Schema reuse benefits:
+ * - Same validation rules can be used in frontend forms
+ * - Guaranteed consistency between client and server
+ * - Easy to maintain validation rules in one place
  */
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    // Validate request body using Zod schema
+    // Returns structured error response on validation failure
+    const validation = await validateRequest(req, createUserSchema);
 
-    // Basic validation - ensure required fields are present
-    if (!data.email || !data.name) {
-      return sendError(
-        'Email and name are required',
-        ERROR_CODES.MISSING_REQUIRED_FIELD,
-        400
-      );
+    if (!validation.success) {
+      return validation.response!;
     }
 
-    const user = await prisma.user.create({ data });
+    // At this point, data is guaranteed to be valid per createUserSchema
+    const user = await prisma.user.create({ data: validation.data });
 
     return sendSuccess(user, 'User created successfully', 201);
   } catch (error: any) {
