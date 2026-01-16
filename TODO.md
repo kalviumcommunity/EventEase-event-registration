@@ -1,0 +1,8 @@
+- [x] Fix src/lib/prisma.ts: Remove console.log, simplify logging, remove middleware and unnecessary comments
+- [x] Fix src/lib/auth.ts: Import JWT_SECRET from env.ts
+- [x] Fix app/api/auth/login/route.ts: Replace new PrismaClient with import from @/lib/prisma
+- [x] Fix app/api/auth/signup/route.ts: Replace new PrismaClient with import from @/lib/prisma
+- [x] Fix app/api/registrations/route.ts: Replace new PrismaClient with import from @/lib/prisma (already correct)
+- [x] Fix app/api/users/route.ts: Add import for verifyToken from @/lib/auth
+- [x] Remove unwanted files: seed.js, seed-pg.js, seed.sql, prisma-test/route.ts, route.example.ts, leftover MD docs
+- [x] Code cleanup: Remove excessive comments in routes

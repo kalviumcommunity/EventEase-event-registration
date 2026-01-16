@@ -16,6 +16,21 @@ import { validateRequest } from '@/lib/schemas/validationUtils';
  */
 export async function GET(req: Request) {
   try {
+    // Extract and verify JWT token from Authorization header
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return sendError('Authorization header missing or invalid', 'UNAUTHORIZED', 401);
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    let decoded;
+    try {
+      decoded = verifyToken(token);
+    } catch (error) {
+      return sendError('Invalid or expired token', 'UNAUTHORIZED', 401);
+    }
+
+    // Token is valid, proceed to fetch users
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 10;
@@ -79,7 +94,7 @@ export async function POST(req: Request) {
     }
 
     // At this point, data is guaranteed to be valid per createUserSchema
-    const user = await prisma.user.create({ data: validation.data });
+    const user = await prisma.user.create({ data: validation.data as typeof createUserSchema._type });
 
     return sendSuccess(user, 'User created successfully', 201);
   } catch (error: any) {
@@ -154,5 +169,19 @@ export async function DELETE(req: Request) {
       ERROR_CODES.DATABASE_FAILURE,
       500
     );
+  }
+}
+
+function verifyToken(token: string): any {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
+    const decoded = require('jsonwebtoken').verify(token, secret);
+    return decoded;
+  } catch (error) {
+    throw new Error(`Token verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -4,17 +4,7 @@ import { ERROR_CODES } from '@/lib/errorCodes';
 import { createEventSchema } from '@/lib/schemas/eventSchema';
 import { validateRequest } from '@/lib/schemas/validationUtils';
 
-/**
- * GET /api/events - List events with pagination and filtering
- *
- * Query Parameters:
- * - page: Page number (default: 1)
- * - limit: Items per page (default: 10)
- * - organizerId: Filter by organizer ID (optional)
- *
- * Centralized response handling ensures consistent success/error envelopes,
- * making it easier for frontend clients to parse and handle responses predictably.
- */
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -54,38 +44,7 @@ export async function GET(req: Request) {
   }
 }
 
-/**
- * POST /api/events - Create a new event
- *
- * Request Body (validated with Zod schema):
- * - title: String, min 3 characters (required)
- * - description: String, optional
- * - date: ISO 8601 datetime, must be in future (required)
- * - location: String, min 2 characters (required)
- * - capacity: Number, minimum 1 (required)
- * - organizerId: ID of the organizer, must be positive integer (required)
- *
- * HTTP Status:
- * - 201: Event created successfully
- * - 400: Validation error (invalid fields or malformed request)
- * - 409: Conflict (duplicate title or constraint violation)
- * - 500: Database or server error
- *
- * Why Zod validation here?
- * - Validates complex constraints like future dates before database queries
- * - Ensures capacity is a valid positive number
- * - Catches missing or invalid organizerId early
- * - Returns detailed field-level errors for frontend validation display
- *
- * Schema reuse benefits:
- * - Frontend form validation uses the same schema
- * - Guarantees server and client enforce identical rules
- * - Reduces validation logic duplication across the codebase
- * - Easy to update all validation rules from one central location
- *
- * Using sendSuccess with status 201 correctly indicates resource creation,
- * which helps HTTP clients distinguish between updates (200) and creation (201).
- */
+
 export async function POST(req: Request) {
   try {
     // Validate request body using Zod schema
