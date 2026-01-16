@@ -1,8 +1,14 @@
-- [x] Fix src/lib/prisma.ts: Remove console.log, simplify logging, remove middleware and unnecessary comments
-- [x] Fix src/lib/auth.ts: Import JWT_SECRET from env.ts
-- [x] Fix app/api/auth/login/route.ts: Replace new PrismaClient with import from @/lib/prisma
-- [x] Fix app/api/auth/signup/route.ts: Replace new PrismaClient with import from @/lib/prisma
-- [x] Fix app/api/registrations/route.ts: Replace new PrismaClient with import from @/lib/prisma (already correct)
-- [x] Fix app/api/users/route.ts: Add import for verifyToken from @/lib/auth
-- [x] Remove unwanted files: seed.js, seed-pg.js, seed.sql, prisma-test/route.ts, route.example.ts, leftover MD docs
-- [x] Code cleanup: Remove excessive comments in routes
+# RBAC Implementation TODO
+
+## Completed
+- [x] Update auth.ts to include role in JWT payload
+- [x] Update login route to sign token with role
+- [x] Create src/middleware.ts for authorization
+- [x] Remove JWT verification from users/route.ts (middleware handles it)
+- [x] Create /api/admin/route.ts for admin-only access
+
+## Remaining
+- [ ] Test the implementation with curl examples
+- [ ] Create documentation (README-ready)
+- [ ] Verify middleware works for /api/users/* and /api/admin/*
+- [ ] Ensure no console.logs or unnecessary comments

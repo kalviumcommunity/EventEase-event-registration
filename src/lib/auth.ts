@@ -1,12 +1,11 @@
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'; // Removed { SignOptions }
 import bcrypt from 'bcrypt';
-import { env } from '@/env';
+import { env } from '../../env';
 
-const JWT_SECRET = env.JWT_SECRET;
+const JWT_SECRET = env.JWT_SECRET!;
 
-
-export function signToken(payload: { userId: string; email: string }, expiresIn: string = '1h'): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+export function signToken(payload: { userId: string; email: string; role: string }, expiresIn: string = '1h'): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn } as jwt.SignOptions);
 }
 
 /**
@@ -14,9 +13,9 @@ export function signToken(payload: { userId: string; email: string }, expiresIn:
  * @param token - JWT token string
  * @returns Decoded payload or throws error if invalid/expired
  */
-export function verifyToken(token: string): { userId: string; email: string } {
+export function verifyToken(token: string): { userId: string; email: string; role: string } {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; email: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & { userId: string; email: string; role: string };
     return decoded;
   } catch (error) {
     throw new Error('Invalid or expired token');

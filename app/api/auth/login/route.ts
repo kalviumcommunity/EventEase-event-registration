@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
       return sendError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
     }
 
-    // Generate JWT token with user ID and email
-    const token = signToken({ userId: user.id, email: user.email });
+    // Generate JWT token with user ID, email, and role
+    const token = signToken({ userId: user.id, email: user.email, role: user.role });
 
     // Return token in response
     return sendSuccess({ token }, 'Login successful');

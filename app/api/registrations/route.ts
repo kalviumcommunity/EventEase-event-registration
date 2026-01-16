@@ -2,17 +2,6 @@ import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
 
-/**
- * GET /api/registrations - List registrations with pagination and filtering
- *
- * Query Parameters:
- * - page: Page number (default: 1)
- * - limit: Items per page (default: 10)
- * - userId: Filter by user ID (optional)
- *
- * Demonstrates the same centralized response pattern used across EventEase API.
- * All handlers follow: Validate → Query → sendSuccess/sendError pattern.
- */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -29,8 +18,11 @@ export async function GET(req: Request) {
       );
     }
 
-    // Build dynamic where clause for filtering
-    const where = userId ? { userId: Number(userId) } : {};
+    /**
+     * FIX: Removed Number(userId) conversion.
+     * Prisma expects a string for the ID filter.
+     */
+    const where = userId ? { userId } : {};
 
     const registrations = await prisma.registration.findMany({
       where,
@@ -50,16 +42,6 @@ export async function GET(req: Request) {
   }
 }
 
-/**
- * POST /api/registrations - Create a new registration
- *
- * Request Body:
- * - userId: ID of the registering user (required)
- * - eventId: ID of the event to register for (required)
- * - Other fields based on schema
- *
- * Demonstrates error handling for both validation and database constraint violations.
- */
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -73,13 +55,16 @@ export async function POST(req: Request) {
       );
     }
 
+    /**
+     * NOTE: If your database uses CUID/UUID (strings), 
+     * ensure the data passed here matches those types.
+     */
     const registration = await prisma.registration.create({ data });
 
     return sendSuccess(registration, 'Registration created successfully', 201);
   } catch (error: any) {
     console.error('[POST /api/registrations] Error:', error);
 
-    // Handle duplicate registration (Prisma P2002)
     if (error.code === 'P2002') {
       return sendError(
         'User is already registered for this event',
@@ -88,7 +73,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Handle foreign key constraint (Prisma P2003)
     if (error.code === 'P2003') {
       return sendError(
         'Referenced user or event not found',
@@ -108,14 +92,9 @@ export async function POST(req: Request) {
 }
 
 /**
- * PUT /api/registrations/:id - Update a registration
- *
- * URL Parameters:
- * - id: Registration ID (numeric)
- *
- * Note: Requires app/api/registrations/[id]/route.ts for dynamic route handling.
+ * FIX: Added underscore to _req to satisfy 'unused parameter' build rule
  */
-export async function PUT(req: Request) {
+export async function PUT(_req: Request) {
   try {
     return sendError(
       'PUT requests require a specific registration ID in the URL path',
@@ -133,14 +112,9 @@ export async function PUT(req: Request) {
 }
 
 /**
- * DELETE /api/registrations/:id - Delete a registration
- *
- * URL Parameters:
- * - id: Registration ID (numeric)
- *
- * Note: Requires app/api/registrations/[id]/route.ts for dynamic route handling.
+ * FIX: Added underscore to _req to satisfy 'unused parameter' build rule
  */
-export async function DELETE(req: Request) {
+export async function DELETE(_req: Request) {
   try {
     return sendError(
       'DELETE requests require a specific registration ID in the URL path',
