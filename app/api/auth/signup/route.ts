@@ -1,10 +1,8 @@
 import { NextRequest } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { hashPassword } from '@/lib/auth';
 import { parseCreateUserRequest } from '@/lib/schemas/userSchema';
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/auth/signup
