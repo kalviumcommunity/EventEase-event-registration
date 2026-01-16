@@ -29,12 +29,10 @@ export function middleware(req: NextRequest) {
 
   const { role } = decoded;
 
-  // Check role-based access
   if (pathname.startsWith('/api/admin/') && role !== 'ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  // For /api/users/*, any authenticated user is allowed
   return NextResponse.next();
 }
 

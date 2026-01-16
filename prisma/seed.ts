@@ -18,13 +18,8 @@ async function main() {
   console.log('════════════════════════════════════════════════════════════════\n');
 
   try {
-    // ─────────────────────────────────────────────────────────────────────
-    // PART 1: Basic Seeding
-    // ─────────────────────────────────────────────────────────────────────
-
     console.log('📋 PART 1: Setting up base data...\n');
 
-    // Create demo organizer
     const organizer = await prisma.user.upsert({
       where: { email: 'organizer@events.local' },
       update: {
@@ -41,7 +36,6 @@ async function main() {
 
     console.log(`✓ Organizer: ${organizer.name} (${organizer.email})`);
 
-    // Create demo user
     const user = await prisma.user.upsert({
       where: { email: 'demo@events.local' },
       update: {
@@ -58,7 +52,6 @@ async function main() {
 
     console.log(`✓ User: ${user.name} (${user.email})\n`);
 
-    // Create test event with capacity
     let event = await prisma.event.findFirst({
       where: { title: 'Tech Conference 2026', organizerId: organizer.id },
     });

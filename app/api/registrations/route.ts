@@ -46,7 +46,6 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    // Validate required fields
     if (!data.userId || !data.eventId) {
       return sendError(
         'userId and eventId are required',

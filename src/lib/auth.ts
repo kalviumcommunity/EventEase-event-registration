@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'; // Removed { SignOptions }
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { env } from '../../env';
 

@@ -69,8 +69,6 @@ export async function registerUserForEvent(
 
     const result = await prisma.$transaction(
       async (tx) => {
-        // Step 1: Verify user exists and fetch details
-        // Using select to avoid over-fetching unnecessary fields
         const user = await tx.user.findUnique({
           where: { id: userId },
           select: { id: true, email: true, name: true },
@@ -80,8 +78,6 @@ export async function registerUserForEvent(
           throw new Error(`User not found: ${userId}`);
         }
 
-        // Step 2: Verify event exists and check capacity
-        // Select only needed fields to reduce bandwidth and lock time
         const event = await tx.event.findUnique({
           where: { id: eventId },
           select: {
@@ -97,16 +93,12 @@ export async function registerUserForEvent(
           throw new Error(`Event not found: ${eventId}`);
         }
 
-        // Business Rule Validation: Event must have available capacity
-        // This prevents negative inventory (overselling)
         if (event.capacity <= 0) {
           throw new Error(
             `Event '${event.title}' has no available capacity. Current capacity: ${event.capacity}`,
           );
         }
 
-        // Step 3: Check for existing registration (prevent duplicates)
-        // This check is supplementary; the unique constraint in schema provides the primary safeguard
         const existingRegistration = await tx.registration.findUnique({
           where: {
             userId_eventId: { userId, eventId },
@@ -120,8 +112,6 @@ export async function registerUserForEvent(
           );
         }
 
-        // Step 4: Create Registration record
-        // This links the user to the event in the join table
         const registration = await tx.registration.create({
           data: {
             userId,
@@ -142,14 +132,9 @@ export async function registerUserForEvent(
           },
         });
 
-        // Step 5: Decrement event capacity
-        // This is critical for inventory management and concurrent request safety.
-        // The transaction isolation ensures no two registrations can decrement
-        // the same capacity value simultaneously.
         const updatedEvent = await tx.event.update({
           where: { id: eventId },
           data: {
-            // Atomic decrement: new capacity = old capacity - 1
             capacity: { decrement: 1 },
           },
           select: {
@@ -231,7 +216,6 @@ export async function testTransactionRollback(
   );
   console.log('Expected: Registration fails, capacity update never executes\n');
 
-  // First, fetch the current state
   const eventBefore = await prisma.event.findUnique({
     where: { id: eventId },
     select: { capacity: true, registrations: { select: { id: true } } },
@@ -241,10 +225,8 @@ export async function testTransactionRollback(
   console.log(`  - Capacity: ${eventBefore?.capacity}`);
   console.log(`  - Registration count: ${eventBefore?.registrations.length}`);
 
-  // Attempt registration (will fail and rollback)
   const result = await registerUserForEvent(prisma, userId, eventId);
 
-  // Fetch state again to confirm no partial writes
   const eventAfter = await prisma.event.findUnique({
     where: { id: eventId },
     select: { capacity: true, registrations: { select: { id: true } } },

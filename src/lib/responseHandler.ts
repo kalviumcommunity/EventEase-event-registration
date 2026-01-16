@@ -93,10 +93,8 @@ export function sendError(
   status?: number,
   details?: any
 ): NextResponse<ApiResponse> {
-  // Use provided status or look it up from error code mapping
   const httpStatus = status || ERROR_CODE_TO_STATUS[code] || 500;
 
-  // Use provided message or look it up from error code messages
   const errorMessage = message || ERROR_CODE_MESSAGES[code] || 'An error occurred';
 
   return NextResponse.json(
