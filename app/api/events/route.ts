@@ -19,6 +19,23 @@ export async function GET(req: Request) {
       );
     }
 
+    // For simplicity, cache only when no filters are applied (all events)
+    const cacheKey = 'events:all';
+
+    try {
+      const cachedData = await redis.get(cacheKey);
+      if (cachedData) {
+        logger.info('Cache Hit for events:all');
+        const events = JSON.parse(cachedData);
+        return sendSuccess(events, 'Events retrieved from cache', 200);
+      }
+    } catch (redisError) {
+      logger.warn('Redis error during cache read:', redisError);
+      // Continue to database fetch on Redis failure
+    }
+
+    logger.info('Cache Miss for events:all');
+
     // organizerId is kept as a string to match Prisma schema expectations
     const where = organizerId ? { organizerId } : {};
 
@@ -28,6 +45,16 @@ export async function GET(req: Request) {
       take: limit,
       orderBy: { date: 'asc' }
     });
+
+    // Cache the result only if no filters (organizerId) are applied
+    if (!organizerId) {
+      try {
+        await redis.setex(cacheKey, 60, JSON.stringify(events));
+      } catch (redisError) {
+        logger.warn('Redis error during cache write:', redisError);
+        // Don't fail the request if caching fails
+      }
+    }
 
     return sendSuccess(events, 'Events retrieved successfully', 200);
   } catch (error) {
@@ -51,16 +78,25 @@ export async function POST(req: Request) {
 
     const data = validation.data as CreateEventRequest;
 
-    const event = await prisma.event.create({ 
+    const event = await prisma.event.create({
       data: {
         title: data.title,
         description: data.description,
         location: data.location,
         capacity: data.capacity,
-        date: new Date(data.date), 
-        organizerId: String(data.organizerId), 
+        date: new Date(data.date),
+        organizerId: String(data.organizerId),
       }
     });
+
+    // Invalidate cache on new event creation
+    try {
+      await redis.del('events:all');
+      logger.info('Cache invalidated for events:all after new event creation');
+    } catch (redisError) {
+      logger.warn('Redis error during cache invalidation:', redisError);
+      // Don't fail the request if invalidation fails
+    }
 
     return sendSuccess(event, 'Event created successfully', 201);
   } catch (error: any) {
