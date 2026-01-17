@@ -4,6 +4,7 @@ import './globals.css';
 
 // 1. ADD THIS IMPORT
 import { LayoutWrapper } from '@/components';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,9 +30,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* LayoutWrapper is now recognized */}
-        <LayoutWrapper>
-          {children}
-        </LayoutWrapper>
+        <ThemeProvider>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

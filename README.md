@@ -140,6 +140,31 @@ src/
 
 ---
 
+## Responsive Design & Theming
+
+EventEase implements a responsive layout with dark/light theme toggle using Tailwind CSS and next-themes.
+
+### Breakpoints
+
+| Breakpoint | Value | Description |
+|------------|-------|-------------|
+| sm | 640px | Small devices (phones) |
+| md | 768px | Medium devices (tablets) |
+| lg | 1024px | Large devices (desktops) |
+| xl | 1280px | Extra large devices (large desktops) |
+
+### Brand Color Palette
+
+| Color | Hex Code | Usage |
+|-------|----------|-------|
+| Brand Light | #93C5FD | Light accent color |
+| Brand Default | #3B82F6 | Primary brand color |
+| Brand Dark | #1E40AF | Dark accent color |
+
+### WCAG Accessibility Standards
+
+EventEase adheres to WCAG 2.1 AA standards for color contrast in dark mode. All text and interactive elements maintain a minimum contrast ratio of 4.5:1 against their backgrounds to ensure readability for users with visual impairments.
+
 ## Code Quality and Tooling
 
 To maintain a clean, consistent, and high-quality codebase from Day 1, EventEase uses industry-standard tooling.
