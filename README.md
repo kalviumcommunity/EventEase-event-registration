@@ -446,5 +446,76 @@ Notes & best practices
   controlled `prisma migrate deploy` flows and database backups + staging
   environments for testing destructive changes.
 
+---
+
+## Fallback UIs, Loading Skeletons, and Error Boundaries
+
+EventEase implements modern React patterns to enhance user experience during loading states and error scenarios.
+
+### Streaming with Loading Skeletons
+
+Next.js App Router supports **Streaming**, which allows parts of a page to render immediately while slower components load asynchronously. This provides a better user experience by showing content progressively rather than waiting for the entire page to load.
+
+**Benefits of Streaming:**
+- **Faster perceived performance**: Users see content sooner, even if some sections are still loading
+- **Improved SEO**: Search engines can index content as it streams in
+- **Better user engagement**: Reduces bounce rates by providing immediate visual feedback
+- **Scalability**: Heavy computations or API calls don't block the entire page render
+
+**Implementation in EventEase:**
+- `src/app/events/loading.tsx` provides a skeleton UI that mimics the actual event list layout
+- Uses Tailwind's `animate-pulse` for smooth loading animations
+- Includes `aria-busy="true"` for accessibility, informing screen readers that content is loading
+- Neutral colors (`bg-gray-200`) ensure compatibility with both light and dark themes
+
+### Error Boundaries
+
+Error Boundaries are React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of crashing the entire application.
+
+**How Error Boundaries Prevent Crashes:**
+- **Isolated failures**: When an error occurs in one route (e.g., `/events`), only that route shows an error UI
+- **Application stability**: The rest of the app (navigation, other pages) continues to function normally
+- **Graceful degradation**: Users see a friendly error message instead of a blank page or browser error
+- **Debugging support**: Errors are logged to the console for developers to investigate
+
+**Implementation in EventEase:**
+- `src/app/events/error.tsx` is a Client Component that catches errors in the events route
+- Accepts `error: Error & { digest?: string }` and `reset: () => void` props as required by Next.js
+- Displays a clear error message with a "Try Again" button that calls `reset()` to retry the failed operation
+- Logs errors to the console for debugging purposes
+- Maintains consistent styling with the EventEase theme
+
+**Usage Example:**
+```typescript
+// src/app/events/error.tsx
+'use client';
+
+interface ErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
+export default function Error({ error, reset }: ErrorProps) {
+  console.error('Events page error:', error);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h1>
+        <p className="text-gray-600 mb-6">We encountered an error while loading the events.</p>
+        <button
+          onClick={reset}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+These patterns ensure EventEase provides a robust, user-friendly experience even when things go wrong, maintaining trust and usability across all scenarios.
+
 
 
