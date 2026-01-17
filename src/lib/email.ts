@@ -1,7 +1,6 @@
 import { Resend } from 'resend';
 import React from 'react';
 
-// Initialize Resend client as a singleton
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export interface SendEmailOptions {
