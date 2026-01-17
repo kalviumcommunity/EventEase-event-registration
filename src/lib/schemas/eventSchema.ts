@@ -1,5 +1,29 @@
 import { z } from 'zod';
 
+export const eventFormSchema = z.object({
+  title: z.string().min(5, 'Title must be at least 5 characters'),
+  description: z.string().min(20, 'Description must be at least 20 characters'),
+  date: z.string().refine(
+    (val) => new Date(val) > new Date(),
+    'Date must be in the future'
+  ),
+  location: z.string().min(1, 'Location is required'),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+}).refine(
+  (data) => {
+    if (data.startTime && data.endTime) {
+      return new Date(data.endTime) > new Date(data.startTime);
+    }
+    return true;
+  },
+  {
+    message: 'End time must be after start time',
+    path: ['endTime'],
+  }
+);
+
+export type EventFormData = z.infer<typeof eventFormSchema>;
 
 export const eventBaseSchema = z.object({
   title: z
