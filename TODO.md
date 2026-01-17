@@ -1,49 +1,23 @@
-## Step 1: Install Dependencies
-- [ ] Install ioredis package using npm
+# TODO: Implement Secure File Uploads to Azure Blob Storage with SAS Tokens
 
-## Step 2: Create Logger Module
-- [ ] Create src/lib/logger.ts with basic logging functionality
+## Infrastructure Setup
+- [ ] Add Azurite service to docker-compose.yml for local Azure Storage emulation
+- [ ] Install @azure/storage-blob SDK via npm
+- [ ] Update .env.local with placeholders for Azure environment variables
 
-## Step 3: Create Redis Client
-- [ ] Create src/lib/redis.ts with singleton ioredis client, error handling, and fallback URL
+## Backend Implementation
+- [ ] Add new error codes to errorCodes.ts for Azure-related errors
+- [ ] Create src/lib/handleError.ts utility for wrapping operations in try-catch
+- [ ] Create src/lib/azureStorage.ts with singleton BlobServiceClient and generateUploadSasUrl function
+- [ ] Create src/app/api/upload/sas/route.ts API route with POST handler for SAS URL generation
 
-## Step 4: Implement Caching in GET /api/events
-- [ ] Update GET handler in app/api/events/route.ts to use Cache-Aside pattern
-- [ ] Add cache key "events:all"
-- [ ] Check Redis first, if hit return cached data, if miss fetch from Prisma and cache with TTL 60s
-- [ ] Add logging for "Cache Hit" or "Cache Miss"
+## Frontend Implementation
+- [ ] Create src/components/FileUpload.tsx React component for file upload workflow
 
-## Step 5: Implement Invalidation in POST /api/events
-- [ ] Update POST handler in app/api/events/route.ts to delete "events:all" key on new event creation
+## Documentation
+- [ ] Create docs/FILE_UPLOADS.md explaining SAS security, CORS, and BlockBlob requirements
 
-## Step 6: Create Documentation
-- [ ] Generate docs/REDIS_CACHING.md with TTL strategy, cache coherence explanation, and monitoring instructions
-
-## Step 7: Performance Measurement
-- [ ] Provide script or instructions to measure response time difference between Cache Miss and Cache Hit using performance.now()
-=======
-# Redis Caching Integration TODO
-
-## Step 1: Install Dependencies
-- [x] Install ioredis package using npm
-
-## Step 2: Create Logger Module
-- [x] Create src/lib/logger.ts with basic logging functionality
-
-## Step 3: Create Redis Client
-- [x] Create src/lib/redis.ts with singleton ioredis client, error handling, and fallback URL
-
-## Step 4: Implement Caching in GET /api/events
-- [x] Update GET handler in app/api/events/route.ts to use Cache-Aside pattern
-- [x] Add cache key "events:all"
-- [x] Check Redis first, if hit return cached data, if miss fetch from Prisma and cache with TTL 60s
-- [x] Add logging for "Cache Hit" or "Cache Miss"
-
-## Step 5: Implement Invalidation in POST /api/events
-- [x] Update POST handler in app/api/events/route.ts to delete "events:all" key on new event creation
-
-## Step 6: Create Documentation
-- [x] Generate docs/REDIS_CACHING.md with TTL strategy, cache coherence explanation, and monitoring instructions
-
-## Step 7: Performance Measurement
-- [x] Provide script or instructions to measure response time difference between Cache Miss and Cache Hit using performance.now()
+## Testing & Verification
+- [ ] Test implementation locally with Azurite
+- [ ] Verify CORS settings for production Azure Storage
+- [ ] Update frontend to integrate FileUpload component
