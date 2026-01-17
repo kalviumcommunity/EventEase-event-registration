@@ -4,6 +4,7 @@ import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { hashPassword } from '@/lib/auth';
 import { parseCreateUserRequest } from '@/lib/schemas/userSchema';
 
+
 /**
  * POST /api/auth/signup
  * Creates a new user account with hashed password.
@@ -46,6 +47,23 @@ export async function POST(req: NextRequest) {
         createdAt: true,
       },
     });
+
+    // Send welcome email after successful user creation
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email,
+          firstName: name.split(' ')[0], // Extract first name
+        }),
+      });
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail the signup if email fails
+    }
 
     // Return success response
     return sendSuccess(user, 'User created successfully', 201);
