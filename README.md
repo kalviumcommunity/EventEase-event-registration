@@ -166,70 +166,85 @@ To maintain a clean, consistent, and high-quality codebase from Day 1, EventEase
 
 ---
 
-## Environment Variable Management
+## Security & Environment Variables
 
-EventEase uses environment variables to securely manage configuration values and sensitive information required for backend operations.
+EventEase implements enterprise-grade security practices for environment variable management to protect sensitive data and prevent accidental exposure of secrets.
 
 ### Environment Files
 
-- .env.local  
-  Stores real secrets such as database connection strings and JWT secrets.  
-  This file is excluded from version control.
+- **`.env.local`** - Stores real secrets and configuration. **Never committed to version control.**
+- **`.env.example`** - Documents all required variables with placeholder values. **Committed to repository.**
+- **`.env.production.local`** - Production-specific overrides (if needed). **Never committed.**
 
-- .env.example  
-  Contains placeholder values and documents all required environment variables.  
-  This file is committed to help developers configure their local environments safely.
+### Server-Only Variables (Private)
 
----
+These variables are only accessible on the server-side and are never exposed to the client bundle:
 
-### Environment Variable Reference
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/eventease` |
+| `JWT_SECRET` | Secret key for JWT token signing | `your-super-secret-jwt-key-here` |
+| `RESEND_API_KEY` | API key for Resend email service | `re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `AZURE_STORAGE_ACCOUNT` | Azure Storage account name | `your-storage-account-name` |
+| `AZURE_STORAGE_ACCESS_KEY` | Azure Storage access key | `your-storage-access-key-here` |
+| `AZURITE_CONNECTION_STRING` | Local Azurite connection (dev only) | `UseDevelopmentStorage=true` |
+| `AZURE_STORAGE_CONTAINER_NAME` | Azure blob container name | `uploads` |
 
-| Variable Name | Scope | Description |
-|--------------|------|-------------|
-| DATABASE_URL | Server | Database connection string for users, events, and registrations |
-| JWT_SECRET | Server | Secret key used for JWT authentication |
-| NEXT_PUBLIC_APP_NAME | Client | Public application name |
-| NEXT_PUBLIC_API_BASE_URL | Client | Base URL for frontend API calls |
+### NEXT_PUBLIC Variables (Client-Accessible)
 
----
+These variables are inlined into the JavaScript bundle and accessible in the browser:
 
-### Build-time vs Runtime Variables
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_APP_URL` | Public application URL | `http://localhost:3000` |
 
-- Environment variables in Next.js are loaded at build time
-- Only variables prefixed with NEXT_PUBLIC_ are accessible on the client
-- Server-only variables remain protected from browser access
+### Build-Time vs Runtime Behavior
 
----
+**Critical Security Concept**: Next.js processes environment variables differently based on when they're accessed:
 
-### Best Practices Followed
+- **Build Time**: Variables are evaluated when the application is built (`npm run build`)
+- **Runtime**: Server-side code can access all variables; client-side code can only access `NEXT_PUBLIC_*` variables
+- **Client Bundle**: Only `NEXT_PUBLIC_*` variables are embedded in the JavaScript sent to browsers
 
-- Secrets are never hard-coded
-- Client and server variables are strictly separated
-- .env.local is ignored by Git
-- .env.example documents required configuration
+**Security Implication**: Never prefix sensitive data with `NEXT_PUBLIC_` - it becomes public!
 
----
+### Validation & Error Handling
 
-### Environment Variable Usage
+EventEase uses Zod-powered validation in `src/lib/env.ts` to ensure:
 
-Server-side environment variables are accessed through a centralized utility:
+- Required variables are present at startup
+- Variables match expected formats (URLs, minimum lengths, API key patterns)
+- Clear error messages for missing or invalid configuration
+- TypeScript type safety across the application
 
-src/lib/env.ts
+### Security Audit Results
 
-export const env = {
-  DATABASE_URL: process.env.DATABASE_URL,
-  JWT_SECRET: process.env.JWT_SECRET,
-};
+✅ **No exposed secrets**: Scanned all `src/` files - no sensitive variables prefixed with `NEXT_PUBLIC_`  
+✅ **Server-only access**: `JWT_SECRET` and `RESEND_API_KEY` only accessed in Server Components and API routes  
+✅ **Git security**: `.gitignore` properly excludes `.env*`, `.env.local`, and `.env*.local`  
 
-if (!env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not defined');
-}
+### Usage Example
 
-if (!env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined');
-}
+```typescript
+// src/lib/env.ts - Validated environment variables
+import { env } from '@/lib/env';
 
-Client-side access is limited to variables prefixed with NEXT_PUBLIC_.
+// Server-side usage (API routes, Server Components)
+const db = new PrismaClient({ datasourceUrl: env.DATABASE_URL });
+const token = jwt.sign(payload, env.JWT_SECRET);
+
+// Client-side usage (components) - only NEXT_PUBLIC variables
+const appUrl = env.NEXT_PUBLIC_APP_URL; // Safe for browser
+```
+
+### Best Practices Implemented
+
+- 🔒 **Centralized validation**: All environment variables validated at application startup
+- 🚫 **No hardcoded secrets**: All sensitive values loaded from environment
+- 🛡️ **Type safety**: Full TypeScript support prevents runtime errors
+- 📝 **Documentation**: `.env.example` provides clear setup instructions
+- 🔍 **Audit trail**: Validation catches configuration issues early
+- 🚦 **Fail fast**: Application won't start with invalid environment configuration
 
 ---
 
