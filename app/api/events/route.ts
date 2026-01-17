@@ -1,4 +1,6 @@
 import prisma from '@/lib/prisma';
+import redis from '@/lib/redis';
+import logger from '@/lib/logger';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
 import { createEventSchema, CreateEventRequest } from '@/lib/schemas/eventSchema';
@@ -30,7 +32,7 @@ export async function GET(req: Request) {
         return sendSuccess(events, 'Events retrieved from cache', 200);
       }
     } catch (redisError) {
-      logger.warn('Redis error during cache read:', redisError);
+      logger.warn({ err: redisError }, 'Redis error during cache read');
       // Continue to database fetch on Redis failure
     }
 
@@ -51,7 +53,7 @@ export async function GET(req: Request) {
       try {
         await redis.setex(cacheKey, 60, JSON.stringify(events));
       } catch (redisError) {
-        logger.warn('Redis error during cache write:', redisError);
+        logger.warn({ err: redisError }, 'Redis error during cache write');
         // Don't fail the request if caching fails
       }
     }
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
       await redis.del('events:all');
       logger.info('Cache invalidated for events:all after new event creation');
     } catch (redisError) {
-      logger.warn('Redis error during cache invalidation:', redisError);
+      logger.warn({ err: redisError }, 'Redis error during cache invalidation');
       // Don't fail the request if invalidation fails
     }
 
