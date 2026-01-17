@@ -1,10 +1,6 @@
 import { Resend } from 'resend';
+import { env } from './env';
 
-const apiKey = process.env.RESEND_API_KEY;
-if (!apiKey) {
-  throw new Error('RESEND_API_KEY is not defined in environment variables');
-}
-
-const resend = new Resend(apiKey);
+const resend = new Resend(env.RESEND_API_KEY);
 
 export default resend;

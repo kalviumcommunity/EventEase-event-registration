@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function NotFound(): JSX.Element {
+export default function NotFound() {
   return (
     <main className="flex h-screen items-center justify-center">
       <section className="text-center">
