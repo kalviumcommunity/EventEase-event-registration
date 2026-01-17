@@ -1,6 +1,13 @@
-# EventEase Deep Clean - API Batch TODO
+# TODO: Implement Global State Management System
 
-## API Batch Comment Cleanup
-- [x] Clean src/middleware.ts: Remove 2 single-line comments
-- [ ] Clean src/app/api/send/route.ts: Remove 1 single-line comment
-- [ ] Verify API batch changes
+## Steps to Complete
+
+- [ ] Create src/context/ directory
+- [ ] Create src/context/AuthContext.tsx with AuthProvider
+- [ ] Create src/context/UIContext.tsx with UIProvider
+- [ ] Create src/hooks/ directory
+- [ ] Create src/hooks/useAuth.ts custom hook
+- [ ] Create src/hooks/useUI.ts custom hook
+- [ ] Update src/app/layout.tsx to wrap with AuthProvider and UIProvider
+- [ ] Update src/app/page.tsx with demo UI for theme toggle, login/logout, sidebar toggle
+- [ ] Test the implementation

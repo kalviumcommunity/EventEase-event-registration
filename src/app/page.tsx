@@ -1,76 +1,97 @@
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
+import { useUI } from '@/hooks/useUI';
+
 export default function Home() {
+  const { user, isAuthenticated, login, logout } = useAuth();
+  const { theme, sidebarOpen, toggleTheme, toggleSidebar, addNotification } = useUI();
+
+  const handleLogin = () => {
+    login({ id: '1', name: 'John Doe', email: 'john@example.com' });
+    addNotification('Logged in successfully!');
+  };
+
+  const handleLogout = () => {
+    logout();
+    addNotification('Logged out successfully!');
+  };
+
+  const bgClass = theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black';
+  const buttonClass = theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600';
+
   return (
-    // Main background: Deep black with a subtle radial gradient for depth
-    <div className="flex min-h-screen flex-col bg-black font-sans text-white selection:bg-indigo-500/30">
-      
+    <div className={`flex min-h-screen flex-col ${bgClass} font-sans transition-colors`}>
       {/* Navigation */}
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-white/10 bg-black/50 px-8 py-4 backdrop-blur-md">
+      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-8 py-4 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
           <span className="text-xl font-bold tracking-tight">EventFlow</span>
         </div>
-        <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition-transform hover:scale-105 active:scale-95">
-          Sign In
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={toggleTheme} className={`rounded-full px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 ${buttonClass}`}>
+            {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+          </button>
+          {isAuthenticated ? (
+            <button onClick={handleLogout} className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95">
+              Logout
+            </button>
+          ) : (
+            <button onClick={handleLogin} className="rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95">
+              Login
+            </button>
+          )}
+        </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative flex flex-1 flex-col items-center justify-center px-6 pt-32 text-center">
-        
-        {/* Background Decorative Glow */}
-        <div className="absolute top-1/4 -z-10 h-[300px] w-75 rounded-full bg-indigo-600/20 blur-[120px]"></div>
-        <div className="absolute bottom-1/4 -z-10 h-[250px] w-[250px] rounded-full bg-purple-600/10 blur-[100px]"></div>
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <div className="fixed left-0 top-0 z-40 h-full w-64 bg-gray-100 dark:bg-gray-800 p-4 shadow-lg">
+          <h2 className="text-lg font-bold mb-4">Sidebar</h2>
+          <p>Sidebar is open!</p>
+          <button onClick={toggleSidebar} className="mt-4 rounded bg-red-500 px-4 py-2 text-white">
+            Close Sidebar
+          </button>
+        </div>
+      )}
 
-        {/* Hero Content */}
+      {/* Main Content */}
+      <main className="relative flex flex-1 flex-col items-center justify-center px-6 pt-32 text-center">
         <div className="max-w-4xl space-y-8">
-          <span className="inline-block rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-sm font-medium text-indigo-400">
-            v2.0 is now live
-          </span>
-          
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl">
-            Host events that <br />
-            <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              people actually love.
-            </span>
+            Welcome to EventFlow
           </h1>
 
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
-            The all-in-one platform for seamless ticketing, attendee management, 
-            and real-time analytics. Built for creators who demand perfection.
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-600 dark:text-gray-400 sm:text-xl">
+            {isAuthenticated ? `Hello, ${user?.name}!` : 'Please log in to access the dashboard.'}
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="#"
-              className="group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-8 font-bold transition-all hover:bg-indigo-500 sm:w-auto"
-            >
-              Start for Free
-              <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            
-            <a
-              href="#"
-              className="flex h-14 w-full items-center justify-center rounded-full border border-white/10 bg-white/5 px-8 font-semibold transition-colors hover:bg-white/10 sm:w-auto"
-            >
-              Watch Demo
-            </a>
+            <button onClick={toggleSidebar} className={`rounded-full px-8 py-3 font-bold transition-all hover:scale-105 ${buttonClass} text-white`}>
+              {sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
+            </button>
           </div>
-        </div>
 
-        {/* Mockup / Visual Element */}
-        <div className="mt-20 w-full max-w-5xl px-4">
-          <div className="relative rounded-2xl border border-white/10 bg-zinc-900/50 p-4 shadow-2xl backdrop-blur-sm">
-            <div className="aspect-video w-full rounded-lg bg-zinc-800/50 flex items-center justify-center border border-white/5">
-               <p className="text-zinc-500 italic">Dashboard Preview Mockup</p>
+          {/* Demo Dashboard */}
+          <div className="mt-10 w-full max-w-4xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6 shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Dashboard Demo</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                <h3 className="font-semibold">Theme</h3>
+                <p>Current: {theme}</p>
+              </div>
+              <div className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                <h3 className="font-semibold">Auth Status</h3>
+                <p>{isAuthenticated ? 'Logged In' : 'Logged Out'}</p>
+              </div>
+              <div className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+                <h3 className="font-semibold">Sidebar</h3>
+                <p>{sidebarOpen ? 'Open' : 'Closed'}</p>
+              </div>
             </div>
           </div>
         </div>
       </main>
-
-      {/* Footer / Social Proof */}
-      <footer className="mt-20 border-t border-white/5 py-12 text-center text-zinc-500">
-        <p className="text-sm">Trusted by 500+ global organizers</p>
-      </footer>
     </div>
   );
 }
