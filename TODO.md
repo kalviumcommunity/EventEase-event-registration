@@ -1,25 +1,14 @@
-# Domain Mapping and SSL/TLS Configuration for EventEase
+# Testing Setup TODO
 
-## Tasks to Complete
-- [x] Edit next.config.ts to add permanent 301 redirect from HTTP to HTTPS
-- [x] Update README.md with "Domain & Security" section including DNS, SSL, HTTPS enforcement, verification, and explanations
-- [x] Verify all changes are implemented correctly
+## Completed
+- [x] Install @testing-library/react, @testing-library/jest-dom, @testing-library/user-event
+- [x] Create jest.config.ts with next/jest, jsdom, coverage thresholds, moduleNameMapper
+- [x] Update src/__tests__/setup.ts with @testing-library/jest-dom and next/navigation mocks
+- [x] Create src/lib/utils.ts with formatEventDate function
+- [x] Create src/components/EventCard.tsx component
+- [x] Create src/__tests__/utils.test.ts for utility tests
+- [x] Create src/__tests__/EventCard.test.tsx for component tests
 
-## DNS Configuration
-- Provide A record and CNAME record values for Azure/AWS
-- Explain finding Custom Domain Verification ID
-
-## SSL/TLS Certificate
-- Guide for App Service Managed Certificate (Azure) or ACM Public Certificate (AWS)
-- CNAME validation record for DNS Zone
-
-## HTTPS Enforcement
-- next.config.ts redirect logic
-- Portal settings for "HTTPS Only"
-
-## Verification
-- nslookup and curl commands
-
-## Documentation
-- README.md section
-- Explanations on DNS validation vs Email, HSTS role
+## Pending
+- [ ] Run tests to verify setup
+- [ ] Provide CI integration snippet
