@@ -1,14 +1,26 @@
-# TypeScript Errors Fix Plan
+# Testing Setup TODO
 
-## Pending Tasks
-- [ ] Create src/lib/requireAuth.ts with authentication logic
-- [ ] Fix redisError type issue in app/api/events/route.ts
-- [ ] Fix decoded.id property access in app/api/profile/route.ts
-- [ ] Add sanitize import in app/api/users/route.ts
-- [ ] Remove unused React import in src/__tests__/EventCard.test.tsx
-- [ ] Fix mock function typing in src/__tests__/setup.ts
-- [ ] Prefix unused request parameter in src/app/api/admin/debug-secrets/route.ts
-- [ ] Fix requireAuth and prisma imports in src/app/api/admin/users/route.ts
-- [ ] Remove unused Suspense import in src/app/events/page.tsx
-- [ ] Prefix unused JWT_REFRESH_SECRET in src/lib/auth.ts
-- [ ] Run TypeScript check to verify all errors are fixed
+## Dependencies
+- [x] Install jest, jest-environment-jsdom, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, ts-jest, @types/jest
+
+## Configuration
+- [x] Create jest.config.ts using next/jest transformer
+- [x] Set testEnvironment to jsdom
+- [x] Configure collectCoverageFrom to include src/**/*.{ts,tsx} but exclude node_modules and .next
+- [x] Set coverageThreshold to 80% for lines, branches, and functions
+
+## Setup File
+- [x] Create jest.setup.ts
+- [x] Mock next/navigation (useRouter, usePathname, useSearchParams)
+- [x] Import @testing-library/jest-dom
+
+## Sample Tests
+- [x] Create test for date helper in src/utils (formatEventDate)
+- [x] Button test already exists
+- [x] EventCard test already exists
+
+## Package Scripts
+- [x] Add test, test:watch, test:coverage scripts to package.json
+
+## Documentation
+- [x] Add README section explaining Testing Pyramid and 80% threshold
