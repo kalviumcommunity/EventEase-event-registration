@@ -128,3 +128,36 @@ Expected: HTTP status 301 Moved Permanently, Location header pointing to HTTPS.
 | `AZURE_STORAGE_ACCESS_KEY` | Azure Storage access key | `your-storage-access-key-here` |
 | `AZURITE_CONNECTION_STRING` | Local Azurite connection (dev only) | `UseDevelopmentStorage=true` |
 | `AZURE_STORAGE_CONTAINER_NAME` | Azure blob container name | `uploads` |
+
+## Testing
+
+### Testing Pyramid
+The testing pyramid is a concept in software testing that illustrates the ideal distribution of different types of automated tests in a project. It emphasizes having more low-level unit tests and fewer high-level end-to-end tests, forming a pyramid shape:
+
+- **Unit Tests** (Base of the pyramid): Test individual functions, components, or modules in isolation. These are fast, reliable, and provide quick feedback.
+- **Integration Tests** (Middle layer): Test interactions between different parts of the system, such as API calls or database operations.
+- **End-to-End Tests** (Top of the pyramid): Test the entire application flow from the user's perspective, simulating real user interactions.
+
+### Coverage Thresholds
+EventEase maintains an 80% coverage threshold for lines, branches, and functions to ensure code resilience. This threshold:
+- Encourages comprehensive testing without being overly restrictive
+- Helps catch regressions and maintain code quality
+- Balances development speed with testing rigor
+- Ensures critical paths are well-tested while allowing flexibility for less critical code
+
+### Running Tests
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Structure
+- **Unit Tests**: Located in `src/__tests__/` with `.test.tsx` or `.test.ts` extensions
+- **Setup**: `src/__tests__/setup.ts` configures Jest environment and mocks
+- **Configuration**: `jest.config.ts` uses Next.js transformer for compatibility with Turbopack
