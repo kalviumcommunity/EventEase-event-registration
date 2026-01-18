@@ -1,34 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyAccessToken } from '@/lib/auth-tokens';
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Only apply to API routes
-  if (!pathname.startsWith('/api/')) {
+  // Skip auth routes and static files
+  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/_next/') || pathname.includes('.')) {
     return NextResponse.next();
   }
 
-  // Skip auth routes
-  if (pathname.startsWith('/api/auth/')) {
-    return NextResponse.next();
+  // Get access token from cookies
+  const accessToken = req.cookies.get('accessToken')?.value;
+
+  if (!accessToken) {
+    // No access token, redirect to login for pages, 401 for API
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const token = authHeader.substring(7);
+  // Verify access token
   let decoded;
   try {
-    decoded = verifyToken(token);
+    decoded = verifyAccessToken(accessToken);
   } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Access token expired/invalid, redirect to login for pages, 401 for API
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
   const { role } = decoded;
 
+  // Check admin routes
   if (pathname.startsWith('/api/admin/') && role !== 'ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -37,5 +43,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/api/:path*',
+  matcher: ['/api/:path*', '/dashboard/:path*', '/events/:path*', '/users/:path*'],
 };
