@@ -6,6 +6,7 @@ const serverEnvSchema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters long'),
   RESEND_API_KEY: z.string().startsWith('re_', 'RESEND_API_KEY must start with "re_"'),
+  AZURE_STORAGE_CONNECTION_STRING: z.string().optional(),
   AZURE_STORAGE_ACCOUNT: z.string().min(1, 'AZURE_STORAGE_ACCOUNT is required'),
   AZURE_STORAGE_ACCESS_KEY: z.string().min(1, 'AZURE_STORAGE_ACCESS_KEY is required'),
   AZURITE_CONNECTION_STRING: z.string().optional(),
