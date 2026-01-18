@@ -1,11 +1,12 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
-import { comparePassword, signToken } from '@/lib/auth';
+import { comparePassword } from '@/lib/auth';
+import { generateAccessToken, generateRefreshToken, setAuthCookies } from '@/lib/auth-tokens';
 
 /**
  * POST /api/auth/login
- * Authenticates user credentials and returns a JWT token upon success.
+ * Authenticates user credentials and sets JWT cookies upon success.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -32,11 +33,15 @@ export async function POST(req: NextRequest) {
       return sendError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
     }
 
-    // Generate JWT token with user ID, email, and role
-    const token = signToken({ userId: user.id, email: user.email, role: user.role });
+    // Generate access and refresh tokens
+    const accessToken = generateAccessToken(user.id, user.role);
+    const refreshToken = generateRefreshToken(user.id);
 
-    // Return token in response
-    return sendSuccess({ token }, 'Login successful');
+    // Create response and set cookies
+    const response = sendSuccess({ message: 'Login successful' });
+    setAuthCookies(response, accessToken, refreshToken);
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return sendError('Internal server error', 'INTERNAL_ERROR', 500);
