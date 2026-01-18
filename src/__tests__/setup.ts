@@ -1,4 +1,22 @@
+import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
+
+// Mock Next.js navigation
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      push: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
+    };
+  },
+  useSearchParams() {
+    return new URLSearchParams();
+  },
+  usePathname() {
+    return '';
+  },
+}));
 
 // Mock Azure Key Vault
 jest.mock('@azure/identity', () => ({
@@ -17,7 +35,7 @@ const mockSecrets: Record<string, string> = {
 
 jest.mock('@azure/keyvault-secrets', () => ({
   SecretClient: jest.fn().mockImplementation(() => ({
-    getSecret: jest.fn().mockImplementation((name: string) => {
+    getSecret: jest.fn().mockImplementation(async (name: string) => {
       const value = mockSecrets[name];
       if (!value) {
         const error = new Error(`Secret ${name} not found`);
@@ -25,7 +43,7 @@ jest.mock('@azure/keyvault-secrets', () => ({
       }
 
       return Promise.resolve({ value });
-    }) as any,
+    }),
   })),
 }));
 
