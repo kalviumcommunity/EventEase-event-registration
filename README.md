@@ -26,6 +26,97 @@ Cold starts occur when a containerized application needs to initialize from scra
 - **Always On**: Keep a minimum number of instances running to reduce cold start frequency.
 - **Pre-warmed Instances**: Use platform features to maintain warm instances ready for immediate scaling.
 - These approaches minimize latency, ensuring quick response times for event registrations and ticket purchases.
+
+## Domain & Security
+
+### DNS Configuration (Azure/AWS)
+To map your custom domain (e.g., eventease.com) to your application:
+
+#### Azure App Service:
+1. Navigate to your App Service in the Azure Portal.
+2. Go to **Custom domains** under Settings.
+3. Click **Add custom domain**.
+4. Enter your domain name (e.g., eventease.com).
+5. To find the **Custom Domain Verification ID**:
+   - In the Azure Portal, go to your App Service > Custom domains.
+   - The verification ID is displayed in the "Domain ownership" section.
+   - Add a TXT record to your DNS zone with the name `@` and value as the verification ID.
+
+**DNS Records:**
+- **A Record**: Point your root domain to the App Service IP address.
+  - Name: `@`
+  - Type: A
+  - Value: [Your App Service IP address, found in Custom domains section]
+- **CNAME Record** for www subdomain:
+  - Name: `www`
+  - Type: CNAME
+  - Value: `[your-app-service-name].azurewebsites.net`
+
+#### AWS Load Balancer:
+1. In the AWS Console, go to Route 53 or your DNS provider.
+2. Create the following records:
+
+**DNS Records:**
+- **A Record** (Alias): Point your root domain to the Load Balancer.
+  - Name: `@`
+  - Type: A (Alias)
+  - Alias Target: [Your Load Balancer DNS name]
+- **CNAME Record** for www subdomain:
+  - Name: `www`
+  - Type: CNAME
+  - Value: [Your Load Balancer DNS name]
+
+### SSL/TLS Certificate
+#### Azure App Service Managed Certificate:
+1. In the Azure Portal, go to your App Service > TLS/SSL settings > Private Key Certificates (.pfx) or Public Key Certificates (.cer).
+2. Click **App Service Managed Certificate**.
+3. Select your custom domain and click **Create**.
+4. For wildcard (*.domain.com), select the domain and enable wildcard.
+
+**CNAME Validation Record:**
+- Add this CNAME record to your DNS zone to complete certificate issuance:
+  - Name: `acme-challenge.[your-domain]`
+  - Type: CNAME
+  - Value: `[validation-value-provided-by-azure]`
+
+#### AWS ACM Public Certificate:
+1. In the AWS Console, go to Certificate Manager (ACM).
+2. Click **Request a certificate** > **Request a public certificate**.
+3. Enter your domain name (e.g., eventease.com) and wildcard (*.eventease.com).
+4. Choose **DNS validation**.
+5. Add the CNAME records provided by ACM to your DNS zone.
+
+**CNAME Validation Records:**
+- For root domain: `acme-challenge.eventease.com` CNAME [value]
+- For wildcard: `acme-challenge.eventease.com` CNAME [value]
+
+### HTTPS Enforcement
+#### Application-Level (next.config.ts):
+The `next.config.ts` file includes a permanent 301 redirect from HTTP to HTTPS for all routes, handling dynamic paths correctly with `:path*`.
+
+#### Infrastructure-Level:
+- **Azure**: In App Service > TLS/SSL settings, enable **HTTPS Only**.
+- **AWS**: In Load Balancer settings, configure listeners to redirect HTTP (80) to HTTPS (443).
+
+### Verification
+Use these commands to verify DNS propagation and HTTPS enforcement:
+
+**DNS Propagation:**
+```
+nslookup eventease.com
+nslookup www.eventease.com
+```
+
+**HTTPS Redirect:**
+```
+curl -I http://eventease.com
+curl -I http://www.eventease.com
+```
+Expected: HTTP status 301 Moved Permanently, Location header pointing to HTTPS.
+
+### Additional Explanations
+- **DNS Validation vs Email Validation**: DNS validation is preferred for certificate renewals as it automates the process without manual email confirmation, reducing the risk of renewal failures. Email validation requires periodic manual intervention.
+- **HSTS (Strict-Transport-Security)**: This header prevents protocol downgrade attacks by instructing browsers to only connect via HTTPS for a specified period (e.g., 2 years). It enhances security by mitigating man-in-the-middle attacks that attempt to force HTTP connections.
 =======
 | Variable | Description | Example |
 |----------|-------------|---------|
