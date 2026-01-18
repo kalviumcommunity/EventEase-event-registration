@@ -24,13 +24,13 @@ async function main() {
       where: { email: 'organizer@events.local' },
       update: {
         name: 'Demo Organizer',
-        role: 'USER',
+        role: 'VIEWER',
       },
       create: {
         name: 'Demo Organizer',
         email: 'organizer@events.local',
         passwordHash: 'demo-hash-organizer',
-        role: 'USER',
+        role: 'VIEWER',
       },
     });
 
@@ -40,13 +40,13 @@ async function main() {
       where: { email: 'demo@events.local' },
       update: {
         name: 'Demo User',
-        role: 'USER',
+        role: 'VIEWER',
       },
       create: {
         name: 'Demo User',
         email: 'demo@events.local',
         passwordHash: 'demo-hash',
-        role: 'USER',
+        role: 'VIEWER',
       },
     });
 

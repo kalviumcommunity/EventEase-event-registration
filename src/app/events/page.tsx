@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+
 
 export default async function EventsPage() {
   // Temporary 3-second delay to test Loading Skeleton

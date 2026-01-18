@@ -1,8 +1,8 @@
-eimport { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getConfig } from '@/lib/config';
 import { VaultConfigurationError } from '@/lib/secrets';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get configuration to verify secrets are accessible
     const config = getConfig();
