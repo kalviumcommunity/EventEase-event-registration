@@ -6,6 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "prisma:migrate": "prisma migrate dev --name init_schema",
     "prisma:generate": "prisma generate",
     "prisma:seed": "ts-node --transpile-only prisma/seed.ts",
@@ -15,6 +18,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.0",
+    "@azure/keyvault-secrets": "^4.10.0",
     "@azure/storage-blob": "^12.30.0",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.2.0",
@@ -43,6 +48,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
@@ -54,8 +60,10 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
+    "jest": "^30.2.0",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.1",
     "tsx": "^4.21.0",
     "typescript": "^5"
