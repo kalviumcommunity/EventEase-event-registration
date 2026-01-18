@@ -1,33 +1,26 @@
-# Secrets Management Implementation TODO
+# TODO: Containerize EventEase for Production
 
-## 1. Utility Setup
-- [x] Install @azure/identity and @azure/keyvault-secrets packages
-- [x] Create src/lib/secrets.ts with getSecret function using DefaultAzureCredential and SecretClient
-- [x] Implement caching layer to avoid redundant network calls
+## 1. Update Dockerfile to Multi-Stage Build
+- [ ] Modify Dockerfile to use multi-stage build with Builder and Runner stages
+- [ ] Use node:20-alpine as base image
+- [ ] Builder stage: Install dependencies, copy source, run npm run build
+- [ ] Runner stage: Copy .next, public, node_modules; set NODE_ENV=production; EXPOSE 3000; use non-root user
 
-## 2. Runtime Injection
-- [x] Create src/lib/config.ts with initializeConfig() function
-- [x] Fetch critical secrets (DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, RESEND_API_KEY) during server startup
-- [x] Export secrets as constant object for app-wide import
+## 2. Create .dockerignore File
+- [ ] Create .dockerignore to exclude unnecessary files (node_modules, .git, etc.)
 
-## 3. Environment Variable Replacement
-- [x] Update src/lib/env.ts to use config instead of process.env
-- [x] Ensure server-side only access to secrets
+## 3. Create GitHub Actions CI/CD Pipeline
+- [ ] Create .github/workflows/deploy.yml
+- [ ] Trigger on push to main branch
+- [ ] Authenticate with Azure Container Registry (ACR)
+- [ ] Build and tag Docker image with GitHub SHA
+- [ ] Push image to ACR
+- [ ] Deploy to Azure App Service for Containers
 
-## 4. Access Control Setup
-- [x] Provide Azure CLI command for granting Key Vault Secrets User role to App Service Managed Identity
+## 4. Add Infrastructure & Scaling Section to README.md
+- [ ] Explain benefits of Horizontal Autoscaling for EventEase
+- [ ] Describe how Health Checks ensure traffic to healthy containers
+- [ ] Discuss Cold Start trade-off and mitigation with Always On or Pre-warmed instances
 
-## 5. Verification & Audit
-- [x] Create src/app/api/admin/debug-secrets/route.ts
-- [x] Log secret keys (not values) to console for verification
-- [x] Implement VaultConfigurationError for missing secrets
-
-## 6. Documentation
-- [x] Add 'Secrets Management' section to README.md
-- [x] Document Least Privilege principle
-- [x] Describe JWT_SECRET rotation strategy using Azure Function
-
-## 7. Testing & Validation
-- [x] Test secret retrieval during app startup
-- [x] Verify caching functionality
-- [x] Ensure no client-side exposure of secrets
+## 5. Provide Local Verification Commands
+- [ ] Document commands to build image locally and run on port 3000
