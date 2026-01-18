@@ -5,12 +5,12 @@ let blobServiceClient: BlobServiceClient;
 
 function getBlobServiceClient(): BlobServiceClient {
   if (!blobServiceClient) {
+    const connectionString = env.AZURE_STORAGE_CONNECTION_STRING || env.AZURITE_CONNECTION_STRING;
     const account = env.AZURE_STORAGE_ACCOUNT;
     const accountKey = env.AZURE_STORAGE_ACCESS_KEY;
-    const connectionString = env.AZURITE_CONNECTION_STRING;
 
     if (connectionString) {
-      // Use Azurite for local development
+      // Use connection string (for Azurite or Azure)
       blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
     } else if (account && accountKey) {
       // Use Azure Storage
@@ -23,7 +23,7 @@ function getBlobServiceClient(): BlobServiceClient {
   return blobServiceClient;
 }
 
-export async function generateUploadSasUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string; publicUrl: string }> {
+export async function generateUploadSasUrl(fileName: string, fileType: string): Promise<{ sasUrl: string }> {
   const blobServiceClient = getBlobServiceClient();
   const containerName = env.AZURE_STORAGE_CONTAINER_NAME || 'uploads';
   const containerClient = blobServiceClient.getContainerClient(containerName);
@@ -36,16 +36,15 @@ export async function generateUploadSasUrl(fileName: string, fileType: string): 
   const sasOptions = {
     containerName,
     blobName: fileName,
-    permissions: BlobSASPermissions.parse('w c'), // Write and Create
+    permissions: BlobSASPermissions.parse('w'), // Write only
     startsOn: new Date(),
-    expiresOn: new Date(new Date().valueOf() + 15 * 60 * 1000), // 15 minutes
+    expiresOn: new Date(new Date().valueOf() + 10 * 60 * 1000), // 10 minutes
     contentType: fileType,
   };
 
   const sasToken = generateBlobSASQueryParameters(sasOptions, blobServiceClient.credential as StorageSharedKeyCredential).toString();
 
-  const uploadUrl = `${blobClient.url}?${sasToken}`;
-  const publicUrl = blobClient.url;
+  const sasUrl = `${blobClient.url}?${sasToken}`;
 
-  return { uploadUrl, publicUrl };
+  return { sasUrl };
 }
