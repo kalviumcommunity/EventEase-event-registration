@@ -7,7 +7,10 @@ import { createEventSchema, CreateEventRequest } from '@/lib/schemas/eventSchema
 import { validateRequest } from '@/lib/schemas/validationUtils';
 import { sanitize } from '@/lib/security';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const corsResponse = corsHandler(req);
+  if (corsResponse.status === 403) return corsResponse;
+
   try {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get('page')) || 1;
@@ -71,7 +74,10 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const corsResponse = corsHandler(req);
+  if (corsResponse.status === 403) return corsResponse;
+
   try {
     const validation = await validateRequest(req, createEventSchema);
 
