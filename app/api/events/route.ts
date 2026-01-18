@@ -5,6 +5,7 @@ import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
 import { createEventSchema, CreateEventRequest } from '@/lib/schemas/eventSchema';
 import { validateRequest } from '@/lib/schemas/validationUtils';
+import { sanitize } from '@/lib/security';
 
 export async function GET(req: Request) {
   try {
@@ -80,15 +81,18 @@ export async function POST(req: Request) {
 
     const data = validation.data as CreateEventRequest;
 
+    // Sanitize user-provided strings to prevent XSS
+    const sanitizedData = {
+      title: sanitize(data.title),
+      description: sanitize(data.description),
+      location: sanitize(data.location),
+      capacity: data.capacity,
+      date: new Date(data.date),
+      organizerId: String(data.organizerId),
+    };
+
     const event = await prisma.event.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        location: data.location,
-        capacity: data.capacity,
-        date: new Date(data.date),
-        organizerId: String(data.organizerId),
-      }
+      data: sanitizedData
     });
 
     // Invalidate cache on new event creation

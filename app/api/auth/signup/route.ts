@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { hashPassword } from '@/lib/auth';
 import { parseCreateUserRequest } from '@/lib/schemas/userSchema';
+import { sanitize } from '@/lib/security';
 
 
 /**
@@ -21,6 +22,12 @@ export async function POST(req: NextRequest) {
 
     const { name, email, password } = validation.data;
 
+    // Sanitize user-provided strings to prevent XSS
+    const sanitizedData = {
+      name: sanitize(name),
+      email: sanitize(email),
+    };
+
     // Check for duplicate email
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -36,8 +43,8 @@ export async function POST(req: NextRequest) {
     // Create user in database
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: sanitizedData.name,
+        email: sanitizedData.email,
         passwordHash,
       },
       select: {

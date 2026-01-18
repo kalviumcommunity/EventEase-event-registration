@@ -48,13 +48,20 @@ export async function POST(req: Request) {
     type CreateUserInput = z.infer<typeof createUserSchema>;
     const userData = validation.data as CreateUserInput;
 
+    // Sanitize user-provided strings to prevent XSS
+    const sanitizedData = {
+      name: sanitize(userData.name),
+      email: sanitize(userData.email),
+      password: userData.password,
+    };
+
     // FIX: Map 'password' from the request to 'passwordHash' for Prisma
     // IMPORTANT: You should hash the password here before saving!
-    const user = await prisma.user.create({ 
+    const user = await prisma.user.create({
         data: {
-            name: userData.name,
-            email: userData.email,
-            passwordHash: userData.password, // In production: await hash(userData.password)
+            name: sanitizedData.name,
+            email: sanitizedData.email,
+            passwordHash: sanitizedData.password, // In production: await hash(sanitizedData.password)
         }
     });
 
