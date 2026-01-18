@@ -5,6 +5,24 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   outputFileTracingRoot: __dirname,
 
+  // Redirect HTTP to HTTPS
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        destination: 'https://:host/:path*',
+        permanent: true,
+        has: [
+          {
+            type: 'header',
+            key: 'x-forwarded-proto',
+            value: 'http',
+          },
+        ],
+      },
+    ];
+  },
+
   // Security headers
   async headers() {
     return [
