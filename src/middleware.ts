@@ -39,6 +39,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  // Additional security for database-related routes
+  if (pathname.startsWith('/api/db-test') && role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden: Admin access required for database operations' }, { status: 403 });
+  }
+
   return NextResponse.next();
 }
 
