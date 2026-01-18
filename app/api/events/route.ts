@@ -6,6 +6,7 @@ import { ERROR_CODES } from '@/lib/errorCodes';
 import { createEventSchema, CreateEventRequest } from '@/lib/schemas/eventSchema';
 import { validateRequest } from '@/lib/schemas/validationUtils';
 import { sanitize } from '@/lib/security';
+import { corsHandler } from '@/lib/cors';
 import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
           return sendSuccess(events, 'Events retrieved from cache', 200);
         }
       } catch (redisError) {
-        logger.warn({ message: 'Redis error during cache read', error: redisError.message });
+        logger.warn({ message: 'Redis error during cache read', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
         // Continue to database fetch on Redis failure
       }
 
@@ -63,7 +64,7 @@ export async function GET(req: NextRequest) {
         try {
           await redis.setex(cacheKey, 60, JSON.stringify(events));
         } catch (redisError) {
-          logger.warn({ message: 'Redis error during cache write', error: redisError.message });
+          logger.warn({ message: 'Redis error during cache write', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
           // Don't fail the request if caching fails
         }
       }
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
         await redis.del('events:all');
         logger.info({ message: 'Cache invalidated after new event creation' });
       } catch (redisError) {
-        logger.warn({ message: 'Redis error during cache invalidation', error: redisError.message });
+        logger.warn({ message: 'Redis error during cache invalidation', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
         // Don't fail the request if invalidation fails
       }
 

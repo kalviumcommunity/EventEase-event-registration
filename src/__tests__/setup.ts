@@ -3,19 +3,13 @@ import { jest } from '@jest/globals';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn(),
-    };
-  },
-  useSearchParams() {
-    return new URLSearchParams();
-  },
-  usePathname() {
-    return '';
-  },
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  })),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+  usePathname: jest.fn(() => ''),
 }));
 
 // Mock Azure Key Vault
@@ -35,7 +29,7 @@ const mockSecrets: Record<string, string> = {
 
 jest.mock('@azure/keyvault-secrets', () => ({
   SecretClient: jest.fn().mockImplementation(() => ({
-    getSecret: jest.fn().mockImplementation(async (name: string) => {
+    getSecret: jest.fn<(name: string) => Promise<{ value: string }>>().mockImplementation(async (name: string) => {
       const value = mockSecrets[name];
       if (!value) {
         const error = new Error(`Secret ${name} not found`);

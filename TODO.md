@@ -1,14 +1,14 @@
-# Testing Setup TODO
+# TypeScript Errors Fix Plan
 
-## Completed
-- [x] Install @testing-library/react, @testing-library/jest-dom, @testing-library/user-event
-- [x] Create jest.config.ts with next/jest, jsdom, coverage thresholds, moduleNameMapper
-- [x] Update src/__tests__/setup.ts with @testing-library/jest-dom and next/navigation mocks
-- [x] Create src/lib/utils.ts with formatEventDate function
-- [x] Create src/components/EventCard.tsx component
-- [x] Create src/__tests__/utils.test.ts for utility tests
-- [x] Create src/__tests__/EventCard.test.tsx for component tests
-
-## Pending
-- [ ] Run tests to verify setup
-- [ ] Provide CI integration snippet
+## Pending Tasks
+- [ ] Create src/lib/requireAuth.ts with authentication logic
+- [ ] Fix redisError type issue in app/api/events/route.ts
+- [ ] Fix decoded.id property access in app/api/profile/route.ts
+- [ ] Add sanitize import in app/api/users/route.ts
+- [ ] Remove unused React import in src/__tests__/EventCard.test.tsx
+- [ ] Fix mock function typing in src/__tests__/setup.ts
+- [ ] Prefix unused request parameter in src/app/api/admin/debug-secrets/route.ts
+- [ ] Fix requireAuth and prisma imports in src/app/api/admin/users/route.ts
+- [ ] Remove unused Suspense import in src/app/events/page.tsx
+- [ ] Prefix unused JWT_REFRESH_SECRET in src/lib/auth.ts
+- [ ] Run TypeScript check to verify all errors are fixed

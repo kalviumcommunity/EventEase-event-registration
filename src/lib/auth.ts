@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import { env } from './env';
 
 const JWT_SECRET = env.JWT_SECRET!;
-const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET!;
 
 export function signToken(payload: { userId: string; email: string; role: string }, expiresIn: string = '1h'): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn } as jwt.SignOptions);

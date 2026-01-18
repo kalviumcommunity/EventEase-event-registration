@@ -3,6 +3,7 @@ import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
 import { createUserSchema } from '@/lib/schemas/userSchema';
 import { validateRequest } from '@/lib/schemas/validationUtils';
+import { sanitize } from '@/lib/security';
 import { z } from 'zod';
 
 export async function GET(req: Request) {

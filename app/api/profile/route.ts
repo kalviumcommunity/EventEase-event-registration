@@ -11,7 +11,7 @@ export async function PUT(req: Request) {
   try {
     // Get access token from cookies
     const cookieStore = cookies();
-    const accessToken = cookieStore.get('accessToken')?.value;
+    const accessToken = (await cookieStore).get('accessToken')?.value;
 
     if (!accessToken) {
       return sendError('Unauthorized', ERROR_CODES.UNAUTHORIZED, 401);
@@ -25,7 +25,7 @@ export async function PUT(req: Request) {
       return sendError('Invalid token', ERROR_CODES.UNAUTHORIZED, 401);
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     const validation = await validateRequest(req, updateUserSchema);
 
