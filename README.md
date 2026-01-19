@@ -118,16 +118,47 @@ Expected: HTTP status 301 Moved Permanently, Location header pointing to HTTPS.
 - **DNS Validation vs Email Validation**: DNS validation is preferred for certificate renewals as it automates the process without manual email confirmation, reducing the risk of renewal failures. Email validation requires periodic manual intervention.
 - **HSTS (Strict-Transport-Security)**: This header prevents protocol downgrade attacks by instructing browsers to only connect via HTTPS for a specified period (e.g., 2 years). It enhances security by mitigating man-in-the-middle attacks that attempt to force HTTP connections.
 =======
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/eventease` |
-| `JWT_SECRET` | Secret key for JWT access token signing | `your-super-secret-jwt-key-here` |
-| `JWT_REFRESH_SECRET` | Secret key for JWT refresh token signing | `your-refresh-secret-key-here` |
-| `RESEND_API_KEY` | API key for Resend email service | `re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
-| `AZURE_STORAGE_ACCOUNT` | Azure Storage account name | `your-storage-account-name` |
-| `AZURE_STORAGE_ACCESS_KEY` | Azure Storage access key | `your-storage-access-key-here` |
-| `AZURITE_CONNECTION_STRING` | Local Azurite connection (dev only) | `UseDevelopmentStorage=true` |
-| `AZURE_STORAGE_CONTAINER_NAME` | Azure blob container name | `uploads` |
+## Environment Variables
+
+### Build-time Variables (Inlined into the JS bundle)
+These variables are prefixed with `NEXT_PUBLIC_` and are accessible in both server and client components. They are embedded in the client-side bundle, so they must be non-sensitive.
+
+| Variable | Description | Example | Visibility |
+|----------|-------------|---------|------------|
+| `NEXT_PUBLIC_APP_URL` | Public application URL | `https://eventease.com` | Public |
+
+### Runtime Variables (Accessible only via Server Components/API routes)
+These variables are server-side only and are loaded from Azure Key Vault. They are never exposed to the client.
+
+| Variable | Description | Example | Visibility |
+|----------|-------------|---------|------------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/eventease` | Private |
+| `JWT_SECRET` | Secret key for JWT access token signing | `your-super-secret-jwt-key-here` | Private |
+| `JWT_REFRESH_SECRET` | Secret key for JWT refresh token signing | `your-refresh-secret-key-here` | Private |
+| `RESEND_API_KEY` | API key for Resend email service | `re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` | Private |
+| `AZURE_STORAGE_ACCOUNT` | Azure Storage account name | `your-storage-account-name` | Private |
+| `AZURE_STORAGE_ACCESS_KEY` | Azure Storage access key | `your-storage-access-key-here` | Private |
+| `AZURITE_CONNECTION_STRING` | Local Azurite connection (dev only) | `UseDevelopmentStorage=true` | Private |
+| `AZURE_STORAGE_CONTAINER_NAME` | Azure blob container name | `uploads` | Private |
+| `AZURE_STORAGE_CONNECTION_STRING` | Azure Storage connection string | `DefaultEndpointsProtocol=https;...` | Private |
+
+## Security Best Practices
+
+### Environment Variable Security
+- **Never commit secrets**: Use Azure Key Vault for production secrets. Local development uses `.env.local` (not committed).
+- **Prefix public variables**: Only variables prefixed with `NEXT_PUBLIC_` are accessible in client-side code.
+- **Validate all variables**: All environment variables are validated using Zod schemas at startup.
+- **Use server-only imports**: For Next.js 16, consider importing `server-only` in server-side utilities to prevent accidental client-side imports.
+
+### File System Security
+- **.gitignore protection**: Ensure `.env*`, `.env.local`, and `.env*.local` are in `.gitignore`.
+- **No .env in git**: Run `git ls-files | findstr .env.local` to verify `.env.local` is not tracked.
+- **Placeholder examples**: `.env.example` contains all variables with placeholder values only.
+
+### Code Security
+- **No process.env in client**: Client components should never access `process.env` directly.
+- **Server-side validation**: All server-side environment access goes through validated `env` object.
+- **Azure Key Vault**: Production secrets are stored securely in Azure Key Vault, not in files.
 
 ## Testing
 
