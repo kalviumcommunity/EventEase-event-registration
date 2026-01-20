@@ -7,7 +7,11 @@ interface EventCardProps {
   description?: string;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ title, date, description }) => {
+export const EventCard: React.FC<EventCardProps> = ({
+  title,
+  date,
+  description,
+}) => {
   return (
     <div className="bg-white shadow-md rounded-lg p-4 border">
       <h2 className="text-xl font-bold mb-2" role="heading" aria-level={2}>

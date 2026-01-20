@@ -14,7 +14,7 @@ export async function GET(req: Request) {
       return sendError(
         'Page and limit must be positive numbers',
         ERROR_CODES.INVALID_INPUT,
-        400
+        400,
       );
     }
 
@@ -30,14 +30,18 @@ export async function GET(req: Request) {
       take: limit,
     });
 
-    return sendSuccess(registrations, 'Registrations retrieved successfully', 200);
+    return sendSuccess(
+      registrations,
+      'Registrations retrieved successfully',
+      200,
+    );
   } catch (error) {
     console.error('[GET /api/registrations] Error:', error);
     return sendError(
       'Failed to retrieve registrations',
       ERROR_CODES.DATABASE_FAILURE,
       500,
-      { error: error instanceof Error ? error.message : 'Unknown error' }
+      { error: error instanceof Error ? error.message : 'Unknown error' },
     );
   }
 }
@@ -50,12 +54,12 @@ export async function POST(req: Request) {
       return sendError(
         'userId and eventId are required',
         ERROR_CODES.MISSING_REQUIRED_FIELD,
-        400
+        400,
       );
     }
 
     /**
-     * NOTE: If your database uses CUID/UUID (strings), 
+     * NOTE: If your database uses CUID/UUID (strings),
      * ensure the data passed here matches those types.
      */
     const registration = await prisma.registration.create({ data });
@@ -68,7 +72,7 @@ export async function POST(req: Request) {
       return sendError(
         'User is already registered for this event',
         ERROR_CODES.DUPLICATE_ENTRY,
-        409
+        409,
       );
     }
 
@@ -77,7 +81,7 @@ export async function POST(req: Request) {
         'Referenced user or event not found',
         ERROR_CODES.CONSTRAINT_VIOLATION,
         400,
-        { error: error.message }
+        { error: error.message },
       );
     }
 
@@ -85,7 +89,7 @@ export async function POST(req: Request) {
       'Failed to create registration',
       ERROR_CODES.DATABASE_FAILURE,
       500,
-      { error: error.message }
+      { error: error.message },
     );
   }
 }
@@ -98,14 +102,14 @@ export async function PUT(_req: Request) {
     return sendError(
       'PUT requests require a specific registration ID in the URL path',
       ERROR_CODES.INVALID_INPUT,
-      400
+      400,
     );
   } catch (error) {
     console.error('[PUT /api/registrations] Error:', error);
     return sendError(
       'Failed to update registration',
       ERROR_CODES.DATABASE_FAILURE,
-      500
+      500,
     );
   }
 }
@@ -118,14 +122,14 @@ export async function DELETE(_req: Request) {
     return sendError(
       'DELETE requests require a specific registration ID in the URL path',
       ERROR_CODES.INVALID_INPUT,
-      400
+      400,
     );
   } catch (error) {
     console.error('[DELETE /api/registrations] Error:', error);
     return sendError(
       'Failed to delete registration',
       ERROR_CODES.DATABASE_FAILURE,
-      500
+      500,
     );
   }
 }

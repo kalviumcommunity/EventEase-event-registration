@@ -2,7 +2,11 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { comparePassword } from '@/lib/auth';
-import { generateAccessToken, generateRefreshToken, setAuthCookies } from '@/lib/auth-tokens';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  setAuthCookies,
+} from '@/lib/auth-tokens';
 
 /**
  * POST /api/auth/login
@@ -14,7 +18,11 @@ export async function POST(req: NextRequest) {
 
     // Validate required fields
     if (!email || !password) {
-      return sendError('Email and password are required', 'VALIDATION_ERROR', 400);
+      return sendError(
+        'Email and password are required',
+        'VALIDATION_ERROR',
+        400,
+      );
     }
 
     // Fetch user by email

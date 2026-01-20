@@ -15,7 +15,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:next": "next lint",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix && prettier --write ."
   },
   "dependencies": {
     "@azure/identity": "^4.13.0",

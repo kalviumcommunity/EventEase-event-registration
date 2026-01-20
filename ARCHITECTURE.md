@@ -218,7 +218,7 @@ ANTI-PATTERN: N+1 Query Problem
            ├─ Query 4: SELECT * FROM registrations WHERE eventId = '3'
            ├─ ...
            └─ Query 101: SELECT * FROM registrations WHERE eventId = '100'
-        
+
         Total: 101 queries, 1000+ ms
 
 ---
@@ -382,7 +382,7 @@ src/lib/queryOptimizations.ts
 ├── imports: "@/lib/prisma"
 │   └── src/lib/prisma.ts
 │
-└── exports: 
+└── exports:
     ├── getUpcomingEventsOptimized()
     ├── getEventsPaginated()
     ├── getOrganizerEventsWithRegistrations()
