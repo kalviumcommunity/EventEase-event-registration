@@ -9,13 +9,16 @@ const createJestConfig = nextJest({
 const config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
+
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+
   moduleNameMapper: {
-    // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
+    // Handle module aliases
     '^@/(.*)$': '<rootDir>/src/$1',
     '^components/(.*)$': '<rootDir>/src/components/$1',
   },
+
   coverageThreshold: {
     global: {
       branches: 80,
@@ -24,6 +27,7 @@ const config = {
       statements: 80,
     },
   },
+
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
@@ -31,6 +35,7 @@ const config = {
     '!src/pages/_app.tsx',
     '!src/pages/_document.tsx',
   ],
+
   testPathIgnorePatterns: ['<rootDir>/src/__tests__/setup.ts'],
 };
 
