@@ -9,7 +9,7 @@ const CRITICAL_SECRETS: string[] = [
   'AZURE-STORAGE-ACCOUNT',
   'AZURE-STORAGE-ACCESS-KEY',
   'AZURE-STORAGE-CONTAINER-NAME',
-  'NEXT-PUBLIC-APP-URL'
+  'NEXT-PUBLIC-APP-URL',
 ];
 
 // Cache for configuration to avoid repeated initialization
@@ -26,7 +26,9 @@ export async function initializeConfig(): Promise<void> {
     console.log('✅ Configuration initialized successfully');
   } catch (error) {
     console.error('❌ Failed to initialize configuration:', error);
-    throw new VaultConfigurationError('Failed to initialize application configuration from Key Vault');
+    throw new VaultConfigurationError(
+      'Failed to initialize application configuration from Key Vault',
+    );
   }
 }
 
@@ -36,7 +38,9 @@ export async function initializeConfig(): Promise<void> {
  */
 export function getConfig(): Record<string, string> {
   if (!configCache) {
-    throw new VaultConfigurationError('Configuration not initialized. Call initializeConfig() first.');
+    throw new VaultConfigurationError(
+      'Configuration not initialized. Call initializeConfig() first.',
+    );
   }
   return configCache;
 }

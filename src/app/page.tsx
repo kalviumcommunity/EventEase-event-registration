@@ -24,7 +24,8 @@ export default function Home() {
                 Welcome to EventEase
               </h1>
               <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-600 dark:text-gray-400 sm:text-xl lg:mx-0">
-                The all-in-one platform for seamless event management, ticketing, and attendee analytics.
+                The all-in-one platform for seamless event management,
+                ticketing, and attendee analytics.
               </p>
             </div>
             {/* Desktop: Horizontal flex/grid, text-left */}

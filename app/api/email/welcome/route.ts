@@ -8,7 +8,11 @@ export async function POST(req: NextRequest) {
     const { userEmail, userName } = await req.json();
 
     if (!userEmail || !userName) {
-      return sendError('Missing required fields: userEmail and userName', 'VALIDATION_ERROR', 400);
+      return sendError(
+        'Missing required fields: userEmail and userName',
+        'VALIDATION_ERROR',
+        400,
+      );
     }
 
     // Send welcome email using React template
@@ -18,7 +22,11 @@ export async function POST(req: NextRequest) {
       react: WelcomeTemplate({ userName }),
     });
 
-    return sendSuccess({ id: result.data?.id }, 'Welcome email sent successfully', 200);
+    return sendSuccess(
+      { id: result.data?.id },
+      'Welcome email sent successfully',
+      200,
+    );
   } catch (error) {
     console.error('Error sending welcome email:', error);
     return sendError('Failed to send welcome email', 'EMAIL_ERROR', 500);

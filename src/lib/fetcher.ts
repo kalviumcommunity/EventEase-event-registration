@@ -33,7 +33,7 @@ export const fetcher = async (url: string): Promise<User[]> => {
   try {
     const data = await response.json();
     return data;
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Failed to parse JSON response');
   }
 };

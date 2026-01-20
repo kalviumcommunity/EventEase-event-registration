@@ -16,7 +16,8 @@ let secretClient: SecretClient | null = null;
 // Initialize the SecretClient with Azure Key Vault URL
 function initializeSecretClient(): SecretClient {
   if (!secretClient) {
-    const keyVaultName = process.env.AZURE_KEY_VAULT_NAME || 'eventease-keyvault';
+    const keyVaultName =
+      process.env.AZURE_KEY_VAULT_NAME || 'eventease-keyvault';
     const keyVaultUrl = `https://${keyVaultName}.vault.azure.net`;
 
     const credential = new DefaultAzureCredential();
@@ -29,7 +30,7 @@ function initializeSecretClient(): SecretClient {
 async function withExponentialBackoff<T>(
   operation: () => Promise<T>,
   maxRetries: number = 3,
-  baseDelay: number = 1000
+  baseDelay: number = 1000,
 ): Promise<T> {
   let lastError: Error;
 
@@ -44,7 +45,7 @@ async function withExponentialBackoff<T>(
       }
 
       const delay = baseDelay * Math.pow(2, attempt);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -77,7 +78,9 @@ export async function getSecret(name: string): Promise<string> {
     if (error instanceof VaultConfigurationError) {
       throw error;
     }
-    throw new VaultConfigurationError(`Failed to retrieve secret '${name}': ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new VaultConfigurationError(
+      `Failed to retrieve secret '${name}': ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
   }
 }
 
@@ -87,15 +90,20 @@ export function clearSecretCache(): void {
 }
 
 // Get multiple secrets in parallel
-export async function getSecrets(names: string[]): Promise<Record<string, string>> {
+export async function getSecrets(
+  names: string[],
+): Promise<Record<string, string>> {
   const promises = names.map(async (name) => {
     const value = await getSecret(name);
     return { name, value };
   });
 
   const results = await Promise.all(promises);
-  return results.reduce((acc, { name, value }) => {
-    acc[name] = value;
-    return acc;
-  }, {} as Record<string, string>);
+  return results.reduce(
+    (acc, { name, value }) => {
+      acc[name] = value;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 }
