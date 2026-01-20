@@ -2,20 +2,20 @@ import { z } from 'zod';
 
 /**
  * Why Zod for validation?
- * 
+ *
  * Zod is a TypeScript-first schema validation library that provides:
  * 1. Type Safety: Automatically generates TypeScript types from schemas
  * 2. Composability: Schemas can be reused and combined across client/server
  * 3. Explicitness: Validation rules are clear and centralized
  * 4. Error Messages: Built-in support for custom, user-friendly error messages
  * 5. Runtime Validation: Validates data at runtime (not just compile-time)
- * 
+ *
  * How schema reuse improves consistency:
  * - Backend uses the schema for request validation
  * - Frontend can use the same schema for form validation
  * - Shared validation reduces discrepancies between client and server
  * - Single source of truth for data requirements across the stack
- * 
+ *
  * How early validation improves API reliability:
  * - Prevents invalid data from reaching database layer
  * - Reduces try/catch complexity in route handlers
@@ -90,7 +90,7 @@ export type UserResponse = z.infer<typeof userResponseSchema>;
 /**
  * Helper function to parse and validate user creation requests
  * Returns { success: true, data } or { success: false, errors }
- * 
+ *
  * Usage in route handler:
  * ```ts
  * const parsed = parseCreateUserRequest(await req.json());

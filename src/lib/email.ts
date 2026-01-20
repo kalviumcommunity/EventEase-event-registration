@@ -1,8 +1,6 @@
 import { Resend } from 'resend';
 import React from 'react';
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
 export interface SendEmailOptions {
   to: string;
   subject: string;
@@ -12,9 +10,18 @@ export interface SendEmailOptions {
 }
 
 export async function sendEmail(options: SendEmailOptions) {
-  const { to, subject, html, react, from = 'EventEase <noreply@eventease.com>' } = options;
+  const {
+    to,
+    subject,
+    html,
+    react,
+    from = 'EventEase <noreply@eventease.com>',
+  } = options;
 
   try {
+    const { env } = await import('./env');
+    const resend = new Resend(env.RESEND_API_KEY);
+
     const emailData: any = {
       from,
       to,

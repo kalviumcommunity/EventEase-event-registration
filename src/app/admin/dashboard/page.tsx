@@ -50,7 +50,7 @@ export default function SuperAdminDashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        setUsers(users.map(u => u.id === userId ? data.user : u));
+        setUsers(users.map((u) => (u.id === userId ? data.user : u)));
       } else {
         console.error('Failed to update user role');
       }
@@ -81,7 +81,9 @@ export default function SuperAdminDashboard() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">SuperAdmin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            SuperAdmin Dashboard
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
             Manage user roles and permissions across the system
           </p>
@@ -94,9 +96,19 @@ export default function SuperAdminDashboard() {
               Current Session
             </h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
-              <p>Logged in as: <span className="font-semibold">{user?.name}</span></p>
-              <p>Email: <span className="font-semibold">{user?.email}</span></p>
-              <p>Role: <span className="font-semibold text-indigo-600">{user?.role}</span></p>
+              <p>
+                Logged in as:{' '}
+                <span className="font-semibold">{user?.name}</span>
+              </p>
+              <p>
+                Email: <span className="font-semibold">{user?.email}</span>
+              </p>
+              <p>
+                Role:{' '}
+                <span className="font-semibold text-indigo-600">
+                  {user?.role}
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -108,7 +120,8 @@ export default function SuperAdminDashboard() {
               User Management
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              Toggle user roles between ADMIN and VIEWER. Only users with ADMIN role can access administrative features.
+              Toggle user roles between ADMIN and VIEWER. Only users with ADMIN
+              role can access administrative features.
             </p>
           </div>
 
@@ -116,19 +129,34 @@ export default function SuperAdminDashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     User
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Email
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Current Role
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Created
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
@@ -156,13 +184,15 @@ export default function SuperAdminDashboard() {
                       <div className="text-sm text-gray-900">{user.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.role === 'ADMIN'
-                          ? 'bg-red-100 text-red-800'
-                          : user.role === 'EDITOR'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-green-100 text-green-800'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.role === 'ADMIN'
+                            ? 'bg-red-100 text-red-800'
+                            : user.role === 'EDITOR'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-green-100 text-green-800'
+                        }`}
+                      >
                         {user.role}
                       </span>
                     </td>
@@ -182,7 +212,9 @@ export default function SuperAdminDashboard() {
                         {updating === user.id ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                         ) : null}
-                        {user.role === 'ADMIN' ? 'Demote to VIEWER' : 'Promote to ADMIN'}
+                        {user.role === 'ADMIN'
+                          ? 'Demote to VIEWER'
+                          : 'Promote to ADMIN'}
                       </button>
                     </td>
                   </tr>
@@ -206,7 +238,9 @@ export default function SuperAdminDashboard() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-900 mb-2">ADMIN</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  ADMIN
+                </h4>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• Create events</li>
                   <li>• Read events</li>
@@ -216,7 +250,9 @@ export default function SuperAdminDashboard() {
                 </ul>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-900 mb-2">EDITOR</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  EDITOR
+                </h4>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• Create events</li>
                   <li>• Read events</li>
@@ -226,7 +262,9 @@ export default function SuperAdminDashboard() {
                 </ul>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-900 mb-2">VIEWER</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  VIEWER
+                </h4>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• Read events</li>
                   <li className="text-gray-400">• Create events (No)</li>

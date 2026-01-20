@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { ApiResponse } from '@/lib/responseHandler';
@@ -14,7 +13,7 @@ export interface ValidationResult<T> {
  */
 export async function validateRequest<T>(
   req: Request,
-  schema: z.ZodType<T, any, any>
+  schema: z.ZodType<T, any, any>,
 ): Promise<ValidationResult<T>> {
   try {
     const data = await req.json();
@@ -71,7 +70,7 @@ export async function validateRequest<T>(
  */
 export function validateData<T>(
   data: unknown,
-  schema: z.ZodType<T, any, any>
+  schema: z.ZodType<T, any, any>,
 ): ValidationResult<T> {
   const result = schema.safeParse(data);
 
@@ -108,7 +107,7 @@ export function validateData<T>(
  * Format Zod errors into a user-friendly array
  */
 export function formatZodErrors(
-  zodError: z.ZodError
+  zodError: z.ZodError,
 ): Array<{ field: string; message: string; code: string }> {
   return zodError.issues.map((err: z.ZodIssue) => ({
     field: err.path.join('.') || 'root',

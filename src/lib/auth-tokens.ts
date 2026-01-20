@@ -35,7 +35,8 @@ export function generateRefreshToken(userId: string): string {
  */
 export function verifyAccessToken(token: string): AccessTokenPayload {
   try {
-    const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as jwt.JwtPayload & AccessTokenPayload;
+    const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as jwt.JwtPayload &
+      AccessTokenPayload;
     return decoded;
   } catch (error) {
     throw new Error('Invalid or expired access token');
@@ -47,7 +48,8 @@ export function verifyAccessToken(token: string): AccessTokenPayload {
  */
 export function verifyRefreshToken(token: string): RefreshTokenPayload {
   try {
-    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as jwt.JwtPayload & RefreshTokenPayload;
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as jwt.JwtPayload &
+      RefreshTokenPayload;
     return decoded;
   } catch (error) {
     throw new Error('Invalid or expired refresh token');
@@ -57,7 +59,11 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
 /**
  * Sets HTTP-only, Secure, SameSite=Lax cookies for access and refresh tokens.
  */
-export function setAuthCookies(res: NextResponse, accessToken: string, refreshToken: string): void {
+export function setAuthCookies(
+  res: NextResponse,
+  accessToken: string,
+  refreshToken: string,
+): void {
   res.cookies.set('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

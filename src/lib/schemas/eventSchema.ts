@@ -1,27 +1,33 @@
 import { z } from 'zod';
 
-export const eventFormSchema = z.object({
-  title: z.string().min(5, 'Title must be at least 5 characters'),
-  description: z.string().min(20, 'Description must be at least 20 characters'),
-  date: z.string().refine(
-    (val) => new Date(val) > new Date(),
-    'Date must be in the future'
-  ),
-  location: z.string().min(1, 'Location is required'),
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
-}).refine(
-  (data) => {
-    if (data.startTime && data.endTime) {
-      return new Date(data.endTime) > new Date(data.startTime);
-    }
-    return true;
-  },
-  {
-    message: 'End time must be after start time',
-    path: ['endTime'],
-  }
-);
+export const eventFormSchema = z
+  .object({
+    title: z.string().min(5, 'Title must be at least 5 characters'),
+    description: z
+      .string()
+      .min(20, 'Description must be at least 20 characters'),
+    date: z
+      .string()
+      .refine(
+        (val) => new Date(val) > new Date(),
+        'Date must be in the future',
+      ),
+    location: z.string().min(1, 'Location is required'),
+    startTime: z.string().optional(),
+    endTime: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.startTime && data.endTime) {
+        return new Date(data.endTime) > new Date(data.startTime);
+      }
+      return true;
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['endTime'],
+    },
+  );
 
 export type EventFormData = z.infer<typeof eventFormSchema>;
 
@@ -40,10 +46,9 @@ export const eventBaseSchema = z.object({
   date: z
     .string()
     .datetime({ message: 'Date must be a valid ISO 8601 datetime string' })
-    .refine(
-      (date) => new Date(date) > new Date(),
-      { message: 'Event date must be in the future' }
-    ),
+    .refine((date) => new Date(date) > new Date(), {
+      message: 'Event date must be in the future',
+    }),
   location: z
     .string()
     .min(2, { message: 'Location must be at least 2 characters long' })
@@ -72,16 +77,18 @@ export const createEventSchema = eventBaseSchema.extend({
  * All fields are optional to allow partial updates
  * organizerId cannot be changed (immutable)
  */
-export const updateEventSchema = eventBaseSchema.partial().omit({ date: true }).extend({
-  date: z
-    .string()
-    .datetime({ message: 'Date must be a valid ISO 8601 datetime string' })
-    .refine(
-      (date) => new Date(date) > new Date(),
-      { message: 'Event date must be in the future' }
-    )
-    .optional(),
-});
+export const updateEventSchema = eventBaseSchema
+  .partial()
+  .omit({ date: true })
+  .extend({
+    date: z
+      .string()
+      .datetime({ message: 'Date must be a valid ISO 8601 datetime string' })
+      .refine((date) => new Date(date) > new Date(), {
+        message: 'Event date must be in the future',
+      })
+      .optional(),
+  });
 
 /**
  * Schema for event response (when returning event data)
@@ -100,7 +107,7 @@ export const eventResponseSchema = createEventSchema.extend({
  * Example usage in a React component:
  * ```tsx
  * type EventFormData = z.infer<typeof createEventSchema>;
- * 
+ *
  * const EventForm: React.FC = () => {
  *   const [data, setData] = useState<EventFormData>({
  *     title: '',
@@ -117,7 +124,7 @@ export type EventResponse = z.infer<typeof eventResponseSchema>;
 /**
  * Helper functions to parse and validate event requests
  * Returns { success: true, data } or { success: false, errors }
- * 
+ *
  * Usage in route handler:
  * ```ts
  * const parsed = parseCreateEventRequest(await req.json());

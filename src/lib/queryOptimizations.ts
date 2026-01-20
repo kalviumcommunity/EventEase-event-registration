@@ -201,7 +201,8 @@ export async function getEventSafely(prisma: PrismaClient, eventId: string) {
 
     return { success: true, data: event };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Database error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Database error';
     console.error('[Query Error] getEventSafely:', errorMessage);
     return { success: false, error: errorMessage, data: null };
   }

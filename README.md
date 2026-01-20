@@ -192,3 +192,27 @@ npm run test:coverage
 - **Unit Tests**: Located in `src/__tests__/` with `.test.tsx` or `.test.ts` extensions
 - **Setup**: `src/__tests__/setup.ts` configures Jest environment and mocks
 - **Configuration**: `jest.config.ts` uses Next.js transformer for compatibility with Turbopack
+ 
+ # #   C I / C D   P i p e l i n e  
+  
+ T h i s   p r o j e c t   u s e s   * * G i t H u b   A c t i o n s * *   f o r   C o n t i n u o u s   I n t e g r a t i o n   a n d   C o n t i n u o u s   D e p l o y m e n t   ( C I / C D ) .   T h e   p i p e l i n e   r u n s   a u t o m a t i c a l l y   o n   p u s h   a n d   p u l l   r e q u e s t s   t o   ` m a i n `   a n d   ` d e v e l o p `   b r a n c h e s .  
+  
+ # # #   W o r k f l o w   C o n f i g u r a t i o n  
+  
+ T h e   w o r k f l o w   i s   d e f i n e d   i n   ` . g i t h u b / w o r k f l o w s / c i . y m l ` .  
+  
+ # # #   S t a g e s  
+ 1 .   * * L i n t * * :   C h e c k s   f o r   c o d e   q u a l i t y   a n d   s t y l e   i s s u e s   u s i n g   E S L i n t   ( ` n p m   r u n   l i n t ` ) .  
+ 2 .   * * T e s t * * :   R u n s   u n i t   t e s t s   w i t h   J e s t   a n d   g e n e r a t e s   a   c o v e r a g e   r e p o r t   ( ` n p m   t e s t   - -   - - c o v e r a g e ` ) .  
+ 3 .   * * B u i l d * * :   C o m p i l e s   t h e   N e x t . j s   a p p l i c a t i o n   t o   e n s u r e   v a l i d   p r o d u c t i o n   b u i l d   ( ` n p m   r u n   b u i l d ` ) .  
+ 4 .   * * D e p l o y * * :   ( O p t i o n a l )   D e p l o y s   t h e   a p p l i c a t i o n   t o   c l o u d   p r o v i d e r s   w h e n   c h a n g e s   a r e   p u s h e d   t o   ` m a i n ` .  
+  
+ # # #   O p t i m i z a t i o n s  
+ -   * * C a c h i n g * * :   ` n p m `   d e p e n d e n c i e s   a r e   c a c h e d   t o   s p e e d   u p   w o r k f l o w   e x e c u t i o n .  
+ -   * * C o n c u r r e n c y * * :   P r e v e n t s   r e d u n d a n t   b u i l d s   b y   c a n c e l l i n g   i n - p r o g r e s s   r u n s   f o r   t h e   s a m e   b r a n c h .  
+  
+ # # #   S e c r e t s  
+ C l o u d   d e p l o y m e n t   c r e d e n t i a l s   s h o u l d   b e   s t o r e d   i n   G i t H u b   S e c r e t s :  
+ -   ` A W S _ A C C E S S _ K E Y _ I D `  
+ -   ` A W S _ S E C R E T _ A C C E S S _ K E Y `  
+ 

@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
-import { env } from './env';
 
-const resend = new Resend(env.RESEND_API_KEY);
+let resend: Resend | null = null;
 
-export default resend;
+export const getResend = async () => {
+    if (!resend) {
+        const { env } = await import('./env');
+        resend = new Resend(env.RESEND_API_KEY);
+    }
+    return resend;
+}
+
+
