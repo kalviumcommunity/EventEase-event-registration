@@ -12,7 +12,13 @@ export interface SendEmailOptions {
 }
 
 export async function sendEmail(options: SendEmailOptions) {
-  const { to, subject, html, react, from = 'EventEase <noreply@eventease.com>' } = options;
+  const {
+    to,
+    subject,
+    html,
+    react,
+    from = 'EventEase <noreply@eventease.com>',
+  } = options;
 
   try {
     const emailData: any = {

@@ -6,7 +6,9 @@ const { Client } = require('pg');
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
-  console.error('Please set DATABASE_URL environment variable (e.g. postgres://user:pass@localhost:5432/db)');
+  console.error(
+    'Please set DATABASE_URL environment variable (e.g. postgres://user:pass@localhost:5432/db)',
+  );
   process.exit(1);
 }
 
@@ -40,7 +42,14 @@ async function main() {
         RETURNING id, title;
       `;
       const date = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // one week
-      const createVals = [eventTitle, 'A sample event created for seeding purposes.', date.toISOString(), 'Online', 100, user.id];
+      const createVals = [
+        eventTitle,
+        'A sample event created for seeding purposes.',
+        date.toISOString(),
+        'Online',
+        100,
+        user.id,
+      ];
       eventRes = await client.query(createEventSql, createVals);
       event = eventRes.rows[0];
     } else {
@@ -61,7 +70,9 @@ async function main() {
     console.log('\u2713 Seeding completed successfully!');
     console.log(`  - User: ${user.email}`);
     console.log(`  - Event: ${event.title} (id=${event.id})`);
-    console.log(`  - Registration: ${regRes.rowCount > 0 ? 'created' : 'already existed'}`);
+    console.log(
+      `  - Registration: ${regRes.rowCount > 0 ? 'created' : 'already existed'}`,
+    );
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Seeding failed:', err);

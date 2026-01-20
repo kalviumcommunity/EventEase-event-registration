@@ -7,5 +7,8 @@ import { sendSuccess } from '@/lib/responseHandler';
  */
 export async function GET(_req: NextRequest) {
   // Middleware ensures only ADMIN users reach here
-  return sendSuccess({ message: 'Welcome to the admin panel' }, 'Admin access granted');
+  return sendSuccess(
+    { message: 'Welcome to the admin panel' },
+    'Admin access granted',
+  );
 }

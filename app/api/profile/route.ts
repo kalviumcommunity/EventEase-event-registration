@@ -44,7 +44,13 @@ export async function PUT(req: Request) {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: sanitizedData,
-      select: { id: true, name: true, email: true, createdAt: true, updatedAt: true }
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return sendSuccess(updatedUser, 'Profile updated successfully', 200);
@@ -56,14 +62,18 @@ export async function PUT(req: Request) {
     }
 
     if (error.code === 'P2002') {
-      return sendError('Email already in use', ERROR_CODES.DUPLICATE_ENTRY, 409);
+      return sendError(
+        'Email already in use',
+        ERROR_CODES.DUPLICATE_ENTRY,
+        409,
+      );
     }
 
     return sendError(
       'Failed to update profile',
       ERROR_CODES.DATABASE_FAILURE,
       500,
-      { error: error.message }
+      { error: error.message },
     );
   }
 }

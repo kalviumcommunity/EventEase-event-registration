@@ -1,12 +1,10 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import Cookies from 'js-cookie';
 import { signToken } from '@/lib/auth';
 
-interface LoginFormProps {}
-
-export default function LoginPage({}: LoginFormProps) {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +19,7 @@ export default function LoginPage({}: LoginFormProps) {
       const token = signToken({
         userId: '1',
         email: email || 'user@example.com',
-        role: 'USER'
+        role: 'USER',
       });
 
       // Set the token in cookies
@@ -29,8 +27,7 @@ export default function LoginPage({}: LoginFormProps) {
 
       // Redirect to dashboard
       window.location.href = '/dashboard';
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (_error) {
       alert('Login failed. Please try again.');
     } finally {
       setLoading(false);
@@ -45,7 +42,10 @@ export default function LoginPage({}: LoginFormProps) {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <a
+            href="/"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             return to home page
           </a>
         </p>
@@ -55,7 +55,10 @@ export default function LoginPage({}: LoginFormProps) {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <div className="mt-1">
@@ -73,7 +76,10 @@ export default function LoginPage({}: LoginFormProps) {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="mt-1">
@@ -107,7 +113,9 @@ export default function LoginPage({}: LoginFormProps) {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Demo credentials</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Demo credentials
+                </span>
               </div>
             </div>
             <div className="mt-4 text-center text-sm text-gray-600">

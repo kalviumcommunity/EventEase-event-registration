@@ -2,7 +2,10 @@ import { NextRequest } from 'next/server';
 import { verifyAccessToken } from '@/lib/auth-tokens';
 import { cookies } from 'next/headers';
 
-export async function requireAuth(_request: NextRequest, requiredPermission?: string): Promise<{ userId: string; role: string }> {
+export async function requireAuth(
+  _request: NextRequest,
+  requiredPermission?: string,
+): Promise<{ userId: string; role: string }> {
   try {
     // Get access token from cookies
     const cookieStore = cookies();
@@ -23,7 +26,7 @@ export async function requireAuth(_request: NextRequest, requiredPermission?: st
     }
 
     return decoded;
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Authentication failed');
   }
 }

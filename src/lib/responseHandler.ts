@@ -58,7 +58,7 @@ export interface ApiResponse<T = any> {
 export function sendSuccess<T>(
   data: T,
   message: string = 'Operation successful',
-  status: number = 200
+  status: number = 200,
 ): NextResponse<ApiResponse<T>> {
   return NextResponse.json(
     {
@@ -67,7 +67,7 @@ export function sendSuccess<T>(
       data,
       timestamp: new Date().toISOString(),
     },
-    { status }
+    { status },
   );
 }
 
@@ -91,11 +91,12 @@ export function sendError(
   message?: string,
   code: string = 'INTERNAL_ERROR',
   status?: number,
-  details?: any
+  details?: any,
 ): NextResponse<ApiResponse> {
   const httpStatus = status || ERROR_CODE_TO_STATUS[code] || 500;
 
-  const errorMessage = message || ERROR_CODE_MESSAGES[code] || 'An error occurred';
+  const errorMessage =
+    message || ERROR_CODE_MESSAGES[code] || 'An error occurred';
 
   return NextResponse.json(
     {
@@ -107,6 +108,6 @@ export function sendError(
       },
       timestamp: new Date().toISOString(),
     },
-    { status: httpStatus }
+    { status: httpStatus },
   );
 }

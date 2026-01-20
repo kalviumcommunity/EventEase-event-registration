@@ -161,7 +161,8 @@ export async function registerUserForEvent(
 
     performanceMetrics.transactionEndMs = Date.now();
     performanceMetrics.durationMs =
-      performanceMetrics.transactionEndMs - performanceMetrics.transactionStartMs;
+      performanceMetrics.transactionEndMs -
+      performanceMetrics.transactionStartMs;
 
     return {
       ...result,
@@ -172,7 +173,8 @@ export async function registerUserForEvent(
   } catch (error) {
     performanceMetrics.transactionEndMs = Date.now();
     performanceMetrics.durationMs =
-      performanceMetrics.transactionEndMs - performanceMetrics.transactionStartMs;
+      performanceMetrics.transactionEndMs -
+      performanceMetrics.transactionStartMs;
 
     const errorMessage = error instanceof Error ? error.message : String(error);
 
