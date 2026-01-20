@@ -3,7 +3,10 @@ import redis from '@/lib/redis';
 import logger, { withRequestId } from '@/lib/logger';
 import { sendSuccess, sendError } from '@/lib/responseHandler';
 import { ERROR_CODES } from '@/lib/errorCodes';
-import { createEventSchema, CreateEventRequest } from '@/lib/schemas/eventSchema';
+import {
+  createEventSchema,
+  CreateEventRequest,
+} from '@/lib/schemas/eventSchema';
 import { validateRequest } from '@/lib/schemas/validationUtils';
 import { sanitize } from '@/lib/security';
 import { corsHandler } from '@/lib/cors';
@@ -17,7 +20,11 @@ export async function GET(req: NextRequest) {
     if (corsResponse.status === 403) return corsResponse;
 
     try {
-      logger.info({ message: 'Fetching events', method: req.method, path: req.nextUrl.pathname });
+      logger.info({
+        message: 'Fetching events',
+        method: req.method,
+        path: req.nextUrl.pathname,
+      });
 
       const { searchParams } = new URL(req.url);
       const page = Number(searchParams.get('page')) || 1;
@@ -28,7 +35,7 @@ export async function GET(req: NextRequest) {
         return sendError(
           'Page and limit must be positive numbers',
           ERROR_CODES.INVALID_INPUT,
-          400
+          400,
         );
       }
 
@@ -43,7 +50,13 @@ export async function GET(req: NextRequest) {
           return sendSuccess(events, 'Events retrieved from cache', 200);
         }
       } catch (redisError) {
-        logger.warn({ message: 'Redis error during cache read', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
+        logger.warn({
+          message: 'Redis error during cache read',
+          error:
+            redisError instanceof Error
+              ? redisError.message
+              : 'Unknown Redis error',
+        });
         // Continue to database fetch on Redis failure
       }
 
@@ -56,7 +69,7 @@ export async function GET(req: NextRequest) {
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { date: 'asc' }
+        orderBy: { date: 'asc' },
       });
 
       // Cache the result only if no filters (organizerId) are applied
@@ -64,19 +77,28 @@ export async function GET(req: NextRequest) {
         try {
           await redis.setex(cacheKey, 60, JSON.stringify(events));
         } catch (redisError) {
-          logger.warn({ message: 'Redis error during cache write', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
+          logger.warn({
+            message: 'Redis error during cache write',
+            error:
+              redisError instanceof Error
+                ? redisError.message
+                : 'Unknown Redis error',
+          });
           // Don't fail the request if caching fails
         }
       }
 
       return sendSuccess(events, 'Events retrieved successfully', 200);
     } catch (error) {
-      logger.error({ message: 'Database error during event retrieval', error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error({
+        message: 'Database error during event retrieval',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       return sendError(
         'Failed to retrieve events',
         ERROR_CODES.DATABASE_FAILURE,
         500,
-        { error: error instanceof Error ? error.message : 'Unknown error' }
+        { error: error instanceof Error ? error.message : 'Unknown error' },
       );
     }
   });
@@ -90,7 +112,11 @@ export async function POST(req: NextRequest) {
     if (corsResponse.status === 403) return corsResponse;
 
     try {
-      logger.info({ message: 'Creating new event', method: req.method, path: req.nextUrl.pathname });
+      logger.info({
+        message: 'Creating new event',
+        method: req.method,
+        path: req.nextUrl.pathname,
+      });
 
       const validation = await validateRequest(req, createEventSchema);
 
@@ -111,7 +137,7 @@ export async function POST(req: NextRequest) {
       };
 
       const event = await prisma.event.create({
-        data: sanitizedData
+        data: sanitizedData,
       });
 
       // Invalidate cache on new event creation
@@ -119,19 +145,28 @@ export async function POST(req: NextRequest) {
         await redis.del('events:all');
         logger.info({ message: 'Cache invalidated after new event creation' });
       } catch (redisError) {
-        logger.warn({ message: 'Redis error during cache invalidation', error: redisError instanceof Error ? redisError.message : 'Unknown Redis error' });
+        logger.warn({
+          message: 'Redis error during cache invalidation',
+          error:
+            redisError instanceof Error
+              ? redisError.message
+              : 'Unknown Redis error',
+        });
         // Don't fail the request if invalidation fails
       }
 
       return sendSuccess(event, 'Event created successfully', 201);
     } catch (error: any) {
-      logger.error({ message: 'Database error during event creation', error: error.message });
+      logger.error({
+        message: 'Database error during event creation',
+        error: error.message,
+      });
 
       if (error.code === 'P2002') {
         return sendError(
           'An event with this title already exists',
           ERROR_CODES.DUPLICATE_ENTRY,
-          409
+          409,
         );
       }
 
@@ -139,7 +174,7 @@ export async function POST(req: NextRequest) {
         return sendError(
           'Referenced organizer not found. Please check the organizerId.',
           ERROR_CODES.CONSTRAINT_VIOLATION,
-          400
+          400,
         );
       }
 
@@ -147,7 +182,7 @@ export async function POST(req: NextRequest) {
         'Failed to create event',
         ERROR_CODES.DATABASE_FAILURE,
         500,
-        { error: error.message }
+        { error: error.message },
       );
     }
   });
@@ -158,7 +193,7 @@ export async function PUT(_req: Request) {
   return sendError(
     'PUT requests require a specific event ID in the URL path: /api/events/[id]',
     ERROR_CODES.INVALID_INPUT,
-    400
+    400,
   );
 }
 
@@ -167,6 +202,6 @@ export async function DELETE(_req: Request) {
   return sendError(
     'DELETE requests require a specific event ID in the URL path: /api/events/[id]',
     ERROR_CODES.INVALID_INPUT,
-    400
+    400,
   );
 }

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     if (!fileName || !fileType) {
       return NextResponse.json(
         { error: 'fileName and fileType are required query parameters' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     console.error('Error generating SAS URL:', error);
     return NextResponse.json(
       { error: 'Failed to generate upload URL' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

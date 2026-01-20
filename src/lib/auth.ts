@@ -4,7 +4,10 @@ import { env } from './env';
 
 const JWT_SECRET = env.JWT_SECRET!;
 
-export function signToken(payload: { userId: string; email: string; role: string }, expiresIn: string = '1h'): string {
+export function signToken(
+  payload: { userId: string; email: string; role: string },
+  expiresIn: string = '1h',
+): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn } as jwt.SignOptions);
 }
 
@@ -13,9 +16,17 @@ export function signToken(payload: { userId: string; email: string; role: string
  * @param token - JWT token string
  * @returns Decoded payload or throws error if invalid/expired
  */
-export function verifyToken(token: string): { userId: string; email: string; role: string } {
+export function verifyToken(token: string): {
+  userId: string;
+  email: string;
+  role: string;
+} {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & { userId: string; email: string; role: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & {
+      userId: string;
+      email: string;
+      role: string;
+    };
     return decoded;
   } catch (error) {
     throw new Error('Invalid or expired token');
@@ -30,7 +41,10 @@ export function verifyToken(token: string): { userId: string; email: string; rol
  * @param saltRounds - Salt rounds (default: 10)
  * @returns Hashed password string
  */
-export async function hashPassword(password: string, saltRounds: number = 10): Promise<string> {
+export async function hashPassword(
+  password: string,
+  saltRounds: number = 10,
+): Promise<string> {
   return bcrypt.hash(password, saltRounds);
 }
 
@@ -40,6 +54,9 @@ export async function hashPassword(password: string, saltRounds: number = 10): P
  * @param hashedPassword - Hashed password from database
  * @returns True if passwords match, false otherwise
  */
-export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function comparePassword(
+  password: string,
+  hashedPassword: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
