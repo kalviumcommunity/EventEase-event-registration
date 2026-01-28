@@ -192,3 +192,24 @@ npm run test:coverage
 - **Unit Tests**: Located in `src/__tests__/` with `.test.tsx` or `.test.ts` extensions
 - **Setup**: `src/__tests__/setup.ts` configures Jest environment and mocks
 - **Configuration**: `jest.config.ts` uses Next.js transformer for compatibility with Turbopack
+
+## CI Pipeline
+
+This project uses [GitHub Actions](https://github.com/features/actions) for Continuous Integration. The pipeline is defined in `.github/workflows/ci.yml` and runs automatically on every push and pull request to `main` and `develop` branches.
+
+### Workflow Stages
+
+The `build-test-deploy` job consists of the following steps:
+
+1.  **Checkout**: Retrives the latest code from the repository.
+2.  **Setup Node.js**: Installs Node.js v18 and caches npm dependencies.
+3.  **Install Dependencies**: Runs `npm ci` for a clean install.
+4.  **Lint**: Runs `npm run lint` to check for code style issues.
+5.  **Test**: Runs `npm test -- --coverage` to execute unit tests and generate coverage reports.
+6.  **Build**: Runs `npm run build` to verify the application builds successfully.
+7.  **Deploy**: (Placeholder) If on `main`, triggers deployment steps.
+
+### Performance Optimizations
+
+-   **Dependency Caching**: `actions/setup-node` caches `~/.npm` to speed up `npm ci`.
+-   **Concurrency**: Prevents redundant builds by cancelling in-progress runs for the same branch (`concurrency: group: ${{ github.ref }}`).
