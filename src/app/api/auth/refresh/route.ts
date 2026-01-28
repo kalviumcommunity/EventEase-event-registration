@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { verifyRefreshToken, generateAccessToken, generateRefreshToken, setAuthCookies } from '@/lib/auth-tokens';
+import {
+  verifyRefreshToken,
+  generateAccessToken,
+  generateRefreshToken,
+  setAuthCookies,
+} from '@/lib/auth-tokens';
 
 /**
  * POST /api/auth/refresh
@@ -13,7 +18,10 @@ export async function POST(req: NextRequest) {
     const refreshToken = req.cookies.get('refreshToken')?.value;
 
     if (!refreshToken) {
-      return NextResponse.json({ error: 'Refresh token not found' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Refresh token not found' },
+        { status: 401 },
+      );
     }
 
     // Verify refresh token
@@ -21,7 +29,10 @@ export async function POST(req: NextRequest) {
     try {
       decoded = verifyRefreshToken(refreshToken);
     } catch (error) {
-      return NextResponse.json({ error: 'Invalid refresh token' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Invalid refresh token' },
+        { status: 401 },
+      );
     }
 
     const { userId } = decoded;
@@ -41,7 +52,9 @@ export async function POST(req: NextRequest) {
     const newRefreshToken = generateRefreshToken(user.id);
 
     // Create response and set new cookies
-    const response = NextResponse.json({ message: 'Tokens refreshed successfully' });
+    const response = NextResponse.json({
+      message: 'Tokens refreshed successfully',
+    });
     setAuthCookies(response, newAccessToken, newRefreshToken);
 
     // Log token rotation
@@ -50,6 +63,9 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error('Refresh token error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }

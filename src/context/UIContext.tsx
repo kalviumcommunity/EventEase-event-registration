@@ -27,18 +27,18 @@ export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const toggleTheme = () => {
     console.log('Toggling theme from', theme);
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
   const toggleSidebar = () => {
     console.log('Toggling sidebar');
-    setSidebarOpen(prev => !prev);
+    setSidebarOpen((prev) => !prev);
   };
 
   const addNotification = (msg: string) => {
     const newNotification = { id: Date.now().toString(), message: msg };
     console.log('Adding notification:', msg);
-    setNotifications(prev => [...prev, newNotification]);
+    setNotifications((prev) => [...prev, newNotification]);
   };
 
   const value: UIContextType = {

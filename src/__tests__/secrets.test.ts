@@ -1,4 +1,9 @@
-import { getSecret, getSecrets, clearSecretCache, VaultConfigurationError } from '../lib/secrets';
+import {
+  getSecret,
+  getSecrets,
+  clearSecretCache,
+  VaultConfigurationError,
+} from '../lib/secrets';
 
 describe('Secrets Management', () => {
   beforeEach(() => {
@@ -20,7 +25,9 @@ describe('Secrets Management', () => {
     });
 
     it('should throw VaultConfigurationError for missing secrets', async () => {
-      await expect(getSecret('NON-EXISTENT-SECRET')).rejects.toThrow(VaultConfigurationError);
+      await expect(getSecret('NON-EXISTENT-SECRET')).rejects.toThrow(
+        VaultConfigurationError,
+      );
     });
 
     it('should throw VaultConfigurationError for secrets with no value', async () => {
@@ -30,7 +37,9 @@ describe('Secrets Management', () => {
         getSecret: jest.fn().mockResolvedValue({ value: null }),
       }));
 
-      await expect(getSecret('DATABASE-URL')).rejects.toThrow(VaultConfigurationError);
+      await expect(getSecret('DATABASE-URL')).rejects.toThrow(
+        VaultConfigurationError,
+      );
     });
   });
 
@@ -44,7 +53,9 @@ describe('Secrets Management', () => {
     });
 
     it('should handle partial failures gracefully', async () => {
-      await expect(getSecrets(['DATABASE-URL', 'NON-EXISTENT'])).rejects.toThrow(VaultConfigurationError);
+      await expect(
+        getSecrets(['DATABASE-URL', 'NON-EXISTENT']),
+      ).rejects.toThrow(VaultConfigurationError);
     });
   });
 

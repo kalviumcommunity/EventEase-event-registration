@@ -16,14 +16,14 @@ export async function GET(req: Request) {
       return sendError(
         'Page and limit must be positive numbers',
         ERROR_CODES.INVALID_INPUT,
-        400
+        400,
       );
     }
 
     const users = await prisma.user.findMany({
       skip: (page - 1) * limit,
       take: limit,
-      select: { id: true, name: true, email: true, createdAt: true } // Avoid sending hashes
+      select: { id: true, name: true, email: true, createdAt: true }, // Avoid sending hashes
     });
 
     return sendSuccess(users, 'Users retrieved successfully', 200);
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       'Failed to retrieve users',
       ERROR_CODES.DATABASE_FAILURE,
       500,
-      { error: error instanceof Error ? error.message : 'Unknown error' }
+      { error: error instanceof Error ? error.message : 'Unknown error' },
     );
   }
 }
@@ -59,11 +59,11 @@ export async function POST(req: Request) {
     // FIX: Map 'password' from the request to 'passwordHash' for Prisma
     // IMPORTANT: You should hash the password here before saving!
     const user = await prisma.user.create({
-        data: {
-            name: sanitizedData.name,
-            email: sanitizedData.email,
-            passwordHash: sanitizedData.password, // In production: await hash(sanitizedData.password)
-        }
+      data: {
+        name: sanitizedData.name,
+        email: sanitizedData.email,
+        passwordHash: sanitizedData.password, // In production: await hash(sanitizedData.password)
+      },
     });
 
     // Remove passwordHash from the response for security
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       return sendError(
         'A user with this email already exists',
         ERROR_CODES.DUPLICATE_ENTRY,
-        409
+        409,
       );
     }
 
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       'Failed to create user',
       ERROR_CODES.DATABASE_FAILURE,
       500,
-      { error: error.message }
+      { error: error.message },
     );
   }
 }
@@ -95,7 +95,7 @@ export async function PUT(_req: Request) {
   return sendError(
     'PUT requests require a specific user ID in the URL path',
     ERROR_CODES.INVALID_INPUT,
-    400
+    400,
   );
 }
 
@@ -104,6 +104,6 @@ export async function DELETE(_req: Request) {
   return sendError(
     'DELETE requests require a specific user ID in the URL path',
     ERROR_CODES.INVALID_INPUT,
-    400
+    400,
   );
 }

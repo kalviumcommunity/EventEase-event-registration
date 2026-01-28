@@ -15,7 +15,9 @@ export function sanitize(input: string): string {
 
   const sanitized = DOMPurify.sanitize(input, { ALLOWED_TAGS: [] });
   if (sanitized !== input) {
-    logger.info(`sanitize: Malicious content detected and neutralized: "${input}" -> "${sanitized}"`);
+    logger.info(
+      `sanitize: Malicious content detected and neutralized: "${input}" -> "${sanitized}"`,
+    );
   }
   return sanitized;
 }
@@ -34,11 +36,13 @@ export function sanitizeHTML(html: string): string {
 
   const sanitized = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['p', 'b', 'i', 'strong', 'em', 'ul', 'li', 'br'],
-    ALLOWED_ATTR: []
+    ALLOWED_ATTR: [],
   });
 
   if (sanitized !== html) {
-    logger.info(`sanitizeHTML: Malicious content detected and neutralized: "${html}" -> "${sanitized}"`);
+    logger.info(
+      `sanitizeHTML: Malicious content detected and neutralized: "${html}" -> "${sanitized}"`,
+    );
   }
   return sanitized;
 }
