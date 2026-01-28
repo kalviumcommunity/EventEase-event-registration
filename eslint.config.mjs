@@ -11,6 +11,7 @@ export default [
       'public/**',
       'next-env.d.ts',
       'next.config.ts',
+      'test-env.js',
     ],
   },
   {
@@ -27,7 +28,11 @@ export default [
       },
       globals: {
         React: 'readonly',
+        React: 'readonly',
         process: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        crypto: 'readonly',
       },
     },
 

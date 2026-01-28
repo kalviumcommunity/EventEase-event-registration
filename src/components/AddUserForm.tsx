@@ -31,8 +31,11 @@ export default function AddUserForm() {
     // Optimistic update: immediately add to cache
     mutate(
       '/api/users',
-      (currentUsers: User[] | undefined) => [...(currentUsers || []), optimisticUser],
-      false
+      (currentUsers: User[] | undefined) => [
+        ...(currentUsers || []),
+        optimisticUser,
+      ],
+      false,
     );
 
     try {
@@ -60,7 +63,7 @@ export default function AddUserForm() {
         '/api/users',
         (currentUsers: User[] | undefined) =>
           currentUsers?.filter((user) => user.id !== tempId) || [],
-        false
+        false,
       );
       console.error('Error creating user:', error);
       alert('Failed to create user. Please try again.');
@@ -89,10 +92,15 @@ export default function AddUserForm() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New User</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Add New User
+              </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Name
                   </label>
                   <input
@@ -106,7 +114,10 @@ export default function AddUserForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Email
                   </label>
                   <input
@@ -120,7 +131,10 @@ export default function AddUserForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Password
                   </label>
                   <input

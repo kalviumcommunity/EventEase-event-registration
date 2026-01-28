@@ -32,7 +32,9 @@ describe('Environment Variables', () => {
   it('should not expose secrets to client-side', () => {
     // This is a structural test - in a real app, we'd check bundle analysis
     // For now, we verify that sensitive env vars are not prefixed with NEXT_PUBLIC_
-    const clientEnvKeys = Object.keys(env).filter(key => key.startsWith('NEXT_PUBLIC_'));
+    const clientEnvKeys = Object.keys(env).filter((key) =>
+      key.startsWith('NEXT_PUBLIC_'),
+    );
 
     expect(clientEnvKeys).toContain('NEXT_PUBLIC_APP_URL');
     expect(clientEnvKeys).not.toContain('DATABASE_URL');

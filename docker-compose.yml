@@ -1,11 +1,11 @@
-version: "3.9"
+version: '3.9'
 
 services:
   app:
     build: .
     container_name: eventease-app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     env_file:
       - .env.local
     depends_on:
@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: eventease_password
       POSTGRES_DB: eventease_db
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -33,7 +33,7 @@ services:
     image: redis:7-alpine
     container_name: eventease-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - eventease-network
 

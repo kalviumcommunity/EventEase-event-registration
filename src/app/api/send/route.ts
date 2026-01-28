@@ -10,10 +10,13 @@ export async function POST(req: NextRequest) {
     const { to, firstName = 'User' } = body;
 
     if (!to) {
-      return new Response(JSON.stringify({ error: 'Recipient email is required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Recipient email is required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
     }
 
     // Send email using Resend client
@@ -27,10 +30,13 @@ export async function POST(req: NextRequest) {
       html: emailHtml,
     });
 
-    return new Response(JSON.stringify({ success: true, id: result.data?.id }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ success: true, id: result.data?.id }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   } catch (error) {
     console.error('Error sending email:', error);
     return new Response(JSON.stringify({ error: 'Failed to send email' }), {

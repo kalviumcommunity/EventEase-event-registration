@@ -5,7 +5,6 @@ import { hashPassword } from '@/lib/auth';
 import { parseCreateUserRequest } from '@/lib/schemas/userSchema';
 import { sanitize } from '@/lib/security';
 
-
 /**
  * POST /api/auth/signup
  * Creates a new user account with hashed password.
@@ -17,7 +16,12 @@ export async function POST(req: NextRequest) {
     // Validate input using Zod schema
     const validation = parseCreateUserRequest(body);
     if (!validation.success) {
-      return sendError('Validation failed', 'VALIDATION_ERROR', 400, validation.error);
+      return sendError(
+        'Validation failed',
+        'VALIDATION_ERROR',
+        400,
+        validation.error,
+      );
     }
 
     const { name, email, password } = validation.data;
@@ -34,7 +38,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      return sendError('User with this email already exists', 'DUPLICATE_ENTRY', 409);
+      return sendError(
+        'User with this email already exists',
+        'DUPLICATE_ENTRY',
+        409,
+      );
     }
 
     // Hash password using bcrypt
@@ -57,16 +65,19 @@ export async function POST(req: NextRequest) {
 
     // Send welcome email after successful user creation
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/send`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/send`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: email,
+            firstName: name.split(' ')[0], // Extract first name
+          }),
         },
-        body: JSON.stringify({
-          to: email,
-          firstName: name.split(' ')[0], // Extract first name
-        }),
-      });
+      );
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
       // Don't fail the signup if email fails

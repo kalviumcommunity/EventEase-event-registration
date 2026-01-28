@@ -10,9 +10,7 @@ export default function LayoutWrapper({
 }) {
   return (
     <AuthProvider>
-      <UIProvider>
-        {children}
-      </UIProvider>
+      <UIProvider>{children}</UIProvider>
     </AuthProvider>
   );
 }

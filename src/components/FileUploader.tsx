@@ -51,7 +51,7 @@ export default function FileUploader() {
     try {
       // Fetch SAS URL
       const response = await fetch(
-        `/api/upload/sas?fileName=${encodeURIComponent(selectedFile.name)}&fileType=${encodeURIComponent(selectedFile.type)}`
+        `/api/upload/sas?fileName=${encodeURIComponent(selectedFile.name)}&fileType=${encodeURIComponent(selectedFile.type)}`,
       );
 
       if (!response.ok) {
@@ -79,7 +79,7 @@ export default function FileUploader() {
     } catch (error) {
       setUploadResult({
         success: false,
-        error: error instanceof Error ? error.message : 'Upload failed'
+        error: error instanceof Error ? error.message : 'Upload failed',
       });
     } finally {
       setUploading(false);
@@ -108,11 +108,13 @@ export default function FileUploader() {
         </div>
       )}
       {uploadResult && (
-        <div className={`p-3 rounded ${
-          uploadResult.success
-            ? 'bg-green-100 text-green-800 border border-green-200'
-            : 'bg-red-100 text-red-800 border border-red-200'
-        }`}>
+        <div
+          className={`p-3 rounded ${
+            uploadResult.success
+              ? 'bg-green-100 text-green-800 border border-green-200'
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}
+        >
           {uploadResult.success ? (
             <div>
               <p className="font-medium">Upload successful!</p>

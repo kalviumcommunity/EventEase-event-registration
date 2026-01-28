@@ -5,7 +5,11 @@ import { useState } from 'react';
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState<{ success: boolean; publicUrl?: string; error?: string } | null>(null);
+  const [uploadResult, setUploadResult] = useState<{
+    success: boolean;
+    publicUrl?: string;
+    error?: string;
+  } | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -27,7 +31,7 @@ export default function FileUpload() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in localStorage
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in localStorage
         },
         body: JSON.stringify({
           fileName: selectedFile.name,
@@ -58,7 +62,10 @@ export default function FileUpload() {
 
       setUploadResult({ success: true, publicUrl });
     } catch (error) {
-      setUploadResult({ success: false, error: error instanceof Error ? error.message : 'Upload failed' });
+      setUploadResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Upload failed',
+      });
     } finally {
       setUploading(false);
     }
@@ -86,11 +93,18 @@ export default function FileUpload() {
         </div>
       )}
       {uploadResult && (
-        <div className={`p-2 rounded ${uploadResult.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <div
+          className={`p-2 rounded ${uploadResult.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+        >
           {uploadResult.success ? (
             <div>
               <p>Upload successful!</p>
-              <a href={uploadResult.publicUrl} target="_blank" rel="noopener noreferrer" className="underline">
+              <a
+                href={uploadResult.publicUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
                 View file
               </a>
             </div>

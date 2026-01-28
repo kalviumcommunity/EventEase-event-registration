@@ -13,9 +13,13 @@ const prisma = new PrismaClient({ log: ['info', 'warn', 'error'] });
  */
 
 async function main() {
-  console.log('════════════════════════════════════════════════════════════════');
+  console.log(
+    '════════════════════════════════════════════════════════════════',
+  );
   console.log('  EVENTEASE - DATABASE SEEDING WITH ADVANCED PATTERNS');
-  console.log('════════════════════════════════════════════════════════════════\n');
+  console.log(
+    '════════════════════════════════════════════════════════════════\n',
+  );
 
   try {
     console.log('📋 PART 1: Setting up base data...\n');
@@ -74,16 +78,22 @@ async function main() {
       console.log(`  - Capacity: ${event.capacity}`);
       console.log(`  - Date: ${event.date.toISOString()}\n`);
     } else {
-      console.log(`✓ Event exists: ${event.title} (capacity: ${event.capacity})\n`);
+      console.log(
+        `✓ Event exists: ${event.title} (capacity: ${event.capacity})\n`,
+      );
     }
 
     // ─────────────────────────────────────────────────────────────────────
     // PART 2: Transaction Demonstration
     // ─────────────────────────────────────────────────────────────────────
 
-    console.log('═══════════════════════════════════════════════════════════════');
+    console.log(
+      '═══════════════════════════════════════════════════════════════',
+    );
     console.log('  🔄 PART 2: TRANSACTION PATTERN - Atomic Registration');
-    console.log('═══════════════════════════════════════════════════════════════\n');
+    console.log(
+      '═══════════════════════════════════════════════════════════════\n',
+    );
 
     console.log('Scenario: Register user for event with capacity check\n');
 
@@ -96,7 +106,9 @@ async function main() {
     console.log(`Before Transaction:`);
     console.log(`  - Event capacity: ${eventBefore?.capacity}`);
     console.log(`  - User: ${user.email}`);
-    console.log(`  - Expected action: Create registration + decrement capacity\n`);
+    console.log(
+      `  - Expected action: Create registration + decrement capacity\n`,
+    );
 
     const transactionStartTime = Date.now();
 
@@ -123,7 +135,9 @@ async function main() {
           if (existingEvent.capacity <= 0) {
             throw new Error('Event has no available capacity');
           }
-          console.log(`  [TX]     ✓ Capacity available: ${existingEvent.capacity}`);
+          console.log(
+            `  [TX]     ✓ Capacity available: ${existingEvent.capacity}`,
+          );
 
           console.log(`  [TX] 3️⃣  Creating registration record...`);
           const registration = await tx.registration.create({
@@ -152,7 +166,9 @@ async function main() {
 
       const transactionDuration = Date.now() - transactionStartTime;
 
-      console.log(`\n✓ Transaction completed successfully in ${transactionDuration}ms`);
+      console.log(
+        `\n✓ Transaction completed successfully in ${transactionDuration}ms`,
+      );
       console.log(`\nAfter Transaction:`);
       console.log(`  - Registration ID: ${result.registration.id}`);
       console.log(`  - New capacity: ${result.event.capacity}`);
@@ -169,9 +185,13 @@ async function main() {
     // PART 3: Rollback Test (Intentional Failure)
     // ─────────────────────────────────────────────────────────────────────
 
-    console.log('═══════════════════════════════════════════════════════════════');
+    console.log(
+      '═══════════════════════════════════════════════════════════════',
+    );
     console.log('  🔁 PART 3: ROLLBACK TEST - Failure Scenario');
-    console.log('═══════════════════════════════════════════════════════════════\n');
+    console.log(
+      '═══════════════════════════════════════════════════════════════\n',
+    );
 
     // Create a test user
     const testUser = await prisma.user.upsert({
@@ -206,7 +226,9 @@ async function main() {
       select: { capacity: true, _count: { select: { registrations: true } } },
     });
     console.log(`  - Event capacity: ${fullEventBefore?.capacity}`);
-    console.log(`  - Current registrations: ${fullEventBefore?._count.registrations}\n`);
+    console.log(
+      `  - Current registrations: ${fullEventBefore?._count.registrations}\n`,
+    );
 
     // Attempt transaction that will fail
     console.log(`Attempting registration...`);
@@ -238,7 +260,9 @@ async function main() {
       select: { capacity: true, _count: { select: { registrations: true } } },
     });
     console.log(`  - Event capacity: ${fullEventAfter?.capacity}`);
-    console.log(`  - Current registrations: ${fullEventAfter?._count.registrations}`);
+    console.log(
+      `  - Current registrations: ${fullEventAfter?._count.registrations}`,
+    );
 
     const noPartialWrites =
       fullEventBefore?.capacity === fullEventAfter?.capacity &&
@@ -253,9 +277,13 @@ async function main() {
     // PART 4: Query Optimization Examples
     // ─────────────────────────────────────────────────────────────────────
 
-    console.log('═══════════════════════════════════════════════════════════════');
+    console.log(
+      '═══════════════════════════════════════════════════════════════',
+    );
     console.log('  ⚡ PART 4: Query Optimization Examples');
-    console.log('═══════════════════════════════════════════════════════════════\n');
+    console.log(
+      '═══════════════════════════════════════════════════════════════\n',
+    );
 
     console.log('Example 1: Selective field fetching (avoid over-fetching)');
     const optimizedEvents = await prisma.event.findMany({
@@ -267,7 +295,9 @@ async function main() {
       },
       take: 5,
     });
-    console.log(`✓ Fetched ${optimizedEvents.length} events with minimal data\n`);
+    console.log(
+      `✓ Fetched ${optimizedEvents.length} events with minimal data\n`,
+    );
 
     console.log('Example 2: Pagination (large dataset handling)');
     const paginatedEvents = await prisma.event.findMany({
@@ -298,9 +328,13 @@ async function main() {
     // Summary
     // ─────────────────────────────────────────────────────────────────────
 
-    console.log('═══════════════════════════════════════════════════════════════');
+    console.log(
+      '═══════════════════════════════════════════════════════════════',
+    );
     console.log('  ✅ SEEDING COMPLETED');
-    console.log('═══════════════════════════════════════════════════════════════\n');
+    console.log(
+      '═══════════════════════════════════════════════════════════════\n',
+    );
 
     console.log('Summary:');
     console.log(`  ✓ Base data created (users, events)`);
@@ -308,9 +342,15 @@ async function main() {
     console.log(`  ✓ Rollback behavior verified`);
     console.log(`  ✓ Query optimizations shown`);
     console.log('\nNext steps:');
-    console.log(`  1. Review src/lib/eventRegistration.ts for transaction details`);
-    console.log(`  2. Review src/lib/queryOptimizations.ts for optimization patterns`);
-    console.log(`  3. Run API tests: curl http://localhost:3000/api/prisma-test`);
+    console.log(
+      `  1. Review src/lib/eventRegistration.ts for transaction details`,
+    );
+    console.log(
+      `  2. Review src/lib/queryOptimizations.ts for optimization patterns`,
+    );
+    console.log(
+      `  3. Run API tests: curl http://localhost:3000/api/prisma-test`,
+    );
     console.log(`  4. Monitor logs for query performance metrics\n`);
   } catch (error) {
     console.error('Seeding failed:', error);
@@ -327,6 +367,3 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-
-
-
