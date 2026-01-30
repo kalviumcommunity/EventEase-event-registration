@@ -8,9 +8,28 @@ import {
 } from '@/lib/auth-tokens';
 
 /**
- * POST /api/auth/refresh
- * Refreshes access and refresh tokens using the refresh token from cookies.
- * Implements token rotation for enhanced security.
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Refreshes access and refresh tokens using the refresh token from httpOnly cookies. Implements token rotation.
+ *     tags:
+ *       - Auth
+ *     responses:
+ *       200:
+ *         description: Tokens refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Tokens refreshed successfully
+ *       401:
+ *         description: Unauthorized - Refresh token missing or invalid
+ *       500:
+ *         description: Internal server error
  */
 export async function POST(req: NextRequest) {
   try {

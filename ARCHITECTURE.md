@@ -130,76 +130,105 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+```
+
+---
+
+## Directory Structure
+
+```
+
+src/
+┣ app/ # Next.js App Router
+┃ ┣ api/ # API Routes (Backend)
+┃ ┃ ┣ health/ # Health Check Endpoint
+┃ ┃ ┗ ...
+┃ ┣ api-docs/ # Swagger UI Page
+┃ ┗ ...
+┣ lib/ # Shared utilities
+┃ ┣ prisma.ts # Database client
+┃ ┣ swagger.ts # OpenAPI spec generator
+┃ ┗ ...
+┣ **tests**/ # Unit tests
+┗ middleware.ts # Edge middleware
+prisma/ # Database schema & migrations
+public/ # Static assets
+**smoke_tests**/ # Post-deployment verification
+
+```
+
 ---
 
 ## Transaction Flow (Event Registration)
 
 ```
+
 CLIENT INITIATES REGISTRATION
-        │
-        │ POST /api/events/register
-        │ { userId: "abc123", eventId: "xyz789" }
-        │
-        ▼
+│
+│ POST /api/events/register
+│ { userId: "abc123", eventId: "xyz789" }
+│
+▼
 API ROUTE HANDLER
-        │
-        ├─ Input validation
-        │  - Check userId exists
-        │  - Check eventId exists
-        │
-        ▼
+│
+├─ Input validation
+│ - Check userId exists
+│ - Check eventId exists
+│
+▼
 TRANSACTION BEGINS (prisma.$transaction)
-        │
-        ├─ STEP 1: Verify User
-        │  ├─ SELECT * FROM "User" WHERE id = 'abc123'
-        │  └─ Result: User found ✓
-        │
-        ├─ STEP 2: Verify Event & Check Capacity
-        │  ├─ SELECT capacity FROM "Event" WHERE id = 'xyz789'
-        │  ├─ Result: capacity = 50 (> 0, so OK) ✓
-        │  └─ Lock acquired for reading event
-        │
-        ├─ STEP 3: Create Registration
-        │  ├─ INSERT INTO "Registration" (userId, eventId, createdAt)
-        │  └─ Result: registration_id = "reg001" ✓
-        │
-        ├─ STEP 4: Decrement Capacity
-        │  ├─ UPDATE "Event" SET capacity = capacity - 1
-        │  │  WHERE id = 'xyz789'
-        │  └─ Result: capacity = 49 ✓
-        │
-        ▼
+│
+├─ STEP 1: Verify User
+│ ├─ SELECT \* FROM "User" WHERE id = 'abc123'
+│ └─ Result: User found ✓
+│
+├─ STEP 2: Verify Event & Check Capacity
+│ ├─ SELECT capacity FROM "Event" WHERE id = 'xyz789'
+│ ├─ Result: capacity = 50 (> 0, so OK) ✓
+│ └─ Lock acquired for reading event
+│
+├─ STEP 3: Create Registration
+│ ├─ INSERT INTO "Registration" (userId, eventId, createdAt)
+│ └─ Result: registration_id = "reg001" ✓
+│
+├─ STEP 4: Decrement Capacity
+│ ├─ UPDATE "Event" SET capacity = capacity - 1
+│ │ WHERE id = 'xyz789'
+│ └─ Result: capacity = 49 ✓
+│
+▼
 ALL STEPS SUCCESSFUL
-        │
-        ├─ COMMIT transaction
-        ├─ Lock released
-        ├─ Both writes permanent
-        │
-        ▼
+│
+├─ COMMIT transaction
+├─ Lock released
+├─ Both writes permanent
+│
+▼
 RETURN SUCCESS RESPONSE
-        │
-        └─ { success: true, registration: {...}, durationMs: 15 }
+│
+└─ { success: true, registration: {...}, durationMs: 15 }
 
 ---
 
 FAILURE SCENARIO (Capacity = 0)
-        │
-        ├─ STEP 1: Verify User ✓
-        ├─ STEP 2: Check Capacity ✗
-        │  └─ capacity = 0, throw error
-        │
-        ▼
+│
+├─ STEP 1: Verify User ✓
+├─ STEP 2: Check Capacity ✗
+│ └─ capacity = 0, throw error
+│
+▼
 TRANSACTION FAILS
-        │
-        ├─ ROLLBACK entire transaction
-        ├─ Undo all changes (even successful ones)
-        ├─ Lock released
-        ├─ Database returns to consistent state
-        │
-        ▼
+│
+├─ ROLLBACK entire transaction
+├─ Undo all changes (even successful ones)
+├─ Lock released
+├─ Database returns to consistent state
+│
+▼
 RETURN ERROR RESPONSE
-        │
-        └─ { success: false, error: "Event has no capacity", durationMs: 5 }
+│
+└─ { success: false, error: "Event has no capacity", durationMs: 5 }
+
 ```
 
 ---
@@ -207,36 +236,38 @@ RETURN ERROR RESPONSE
 ## Query Optimization Flow (No N+1)
 
 ```
+
 ANTI-PATTERN: N+1 Query Problem
-        │
-        ├─ Query 1: SELECT * FROM events LIMIT 100
-        │  Result: 100 events
-        │
-        └─ Loop through events:
-           ├─ Query 2: SELECT * FROM registrations WHERE eventId = '1'
-           ├─ Query 3: SELECT * FROM registrations WHERE eventId = '2'
-           ├─ Query 4: SELECT * FROM registrations WHERE eventId = '3'
-           ├─ ...
-           └─ Query 101: SELECT * FROM registrations WHERE eventId = '100'
+│
+├─ Query 1: SELECT _ FROM events LIMIT 100
+│ Result: 100 events
+│
+└─ Loop through events:
+├─ Query 2: SELECT _ FROM registrations WHERE eventId = '1'
+├─ Query 3: SELECT _ FROM registrations WHERE eventId = '2'
+├─ Query 4: SELECT _ FROM registrations WHERE eventId = '3'
+├─ ...
+└─ Query 101: SELECT \* FROM registrations WHERE eventId = '100'
 
         Total: 101 queries, 1000+ ms
 
 ---
 
 OPTIMIZED: Single Query with Relations
-        │
-        ├─ Query 1: SELECT e.*, r.* FROM events e
-        │           LEFT JOIN registrations r ON e.id = r.eventId
-        │           LIMIT 100
-        │
-        │ Result: 100 events with all registrations in one round-trip
-        │ Time: 5ms (200x faster)
-        │
-        └─ Access results:
-           for (const event of events) {
-             // Registrations already loaded, no additional queries
-             event.registrations.forEach(reg => {...})
-           }
+│
+├─ Query 1: SELECT e._, r._ FROM events e
+│ LEFT JOIN registrations r ON e.id = r.eventId
+│ LIMIT 100
+│
+│ Result: 100 events with all registrations in one round-trip
+│ Time: 5ms (200x faster)
+│
+└─ Access results:
+for (const event of events) {
+// Registrations already loaded, no additional queries
+event.registrations.forEach(reg => {...})
+}
+
 ```
 
 ---
@@ -244,57 +275,59 @@ OPTIMIZED: Single Query with Relations
 ## Performance Monitoring Architecture
 
 ```
+
 APPLICATION EXECUTION
-        │
-        ▼
+│
+▼
 PRISMA MIDDLEWARE (Slow Query Detection)
-        │
-        ├─ Record start time
-        │
-        ├─ Execute database operation
-        │
-        ├─ Record end time
-        │
-        ├─ Calculate duration = end - start
-        │
-        ├─ Duration > 100ms? ──YES──► Log warning to console
-        │                     │
-        │                     ├─ Model: event
-        │                     ├─ Operation: findMany
-        │                     └─ Duration: 150ms
-        │
-        └─ Duration ≤ 100ms? ──► Continue silently
+│
+├─ Record start time
+│
+├─ Execute database operation
+│
+├─ Record end time
+│
+├─ Calculate duration = end - start
+│
+├─ Duration > 100ms? ──YES──► Log warning to console
+│ │
+│ ├─ Model: event
+│ ├─ Operation: findMany
+│ └─ Duration: 150ms
+│
+└─ Duration ≤ 100ms? ──► Continue silently
 
 ---
 
 PRODUCTION MONITORING STACK (Recommended)
-        │
-        ├─ Application Logs
-        │  ├─ [SLOW QUERY] warnings
-        │  └─ Error stack traces
-        │
-        ├─ Log Aggregation (DataDog, New Relic, ELK)
-        │  ├─ Collect all [SLOW QUERY] logs
-        │  ├─ Aggregate by model & operation
-        │  └─ Trend analysis
-        │
-        ├─ Database Monitoring
-        │  ├─ Query execution statistics
-        │  ├─ Index usage stats
-        │  ├─ Connection pool utilization
-        │  └─ Disk space & memory
-        │
-        ├─ Alerting Rules
-        │  ├─ Error rate > 1% → Alert
-        │  ├─ Query time > 500ms → Alert
-        │  ├─ Connection pool > 90% → Alert
-        │  └─ Disk space < 10% → Alert
-        │
-        └─ Dashboards
-           ├─ Query performance over time
-           ├─ Slowest queries (P99, P95)
-           ├─ Error trends
-           └─ Resource utilization
+│
+├─ Application Logs
+│ ├─ [SLOW QUERY] warnings
+│ └─ Error stack traces
+│
+├─ Log Aggregation (DataDog, New Relic, ELK)
+│ ├─ Collect all [SLOW QUERY] logs
+│ ├─ Aggregate by model & operation
+│ └─ Trend analysis
+│
+├─ Database Monitoring
+│ ├─ Query execution statistics
+│ ├─ Index usage stats
+│ ├─ Connection pool utilization
+│ └─ Disk space & memory
+│
+├─ Alerting Rules
+│ ├─ Error rate > 1% → Alert
+│ ├─ Query time > 500ms → Alert
+│ ├─ Connection pool > 90% → Alert
+│ └─ Disk space < 10% → Alert
+│
+└─ Dashboards
+├─ Query performance over time
+├─ Slowest queries (P99, P95)
+├─ Error trends
+└─ Resource utilization
+
 ```
 
 ---
@@ -302,61 +335,63 @@ PRODUCTION MONITORING STACK (Recommended)
 ## Data Flow: User Event Registration
 
 ```
+
 ┌─────────────┐
-│  User UI    │  "Register me for tech conference"
+│ User UI │ "Register me for tech conference"
 └──────┬──────┘
-       │
-       ▼
+│
+▼
 ┌─────────────────────────────────────────────┐
-│  API Handler (route.ts)                     │
-│  POST /api/events/register                  │
-│  Body: { userId: "u1", eventId: "e1" }     │
+│ API Handler (route.ts) │
+│ POST /api/events/register │
+│ Body: { userId: "u1", eventId: "e1" } │
 └──────┬──────────────────────────────────────┘
-       │
-       ▼
+│
+▼
 ┌─────────────────────────────────────────────┐
-│  registerUserForEvent(prisma, u1, e1)      │
-│  (src/lib/eventRegistration.ts)             │
+│ registerUserForEvent(prisma, u1, e1) │
+│ (src/lib/eventRegistration.ts) │
 └──────┬──────────────────────────────────────┘
-       │
-       ▼
+│
+▼
 ┌─────────────────────────────────────────────┐
-│  prisma.$transaction(async (tx) => {        │
-│    // All operations atomic                  │
-│  })                                          │
+│ prisma.$transaction(async (tx) => { │
+│ // All operations atomic │
+│ }) │
 └──────┬──────────────────────────────────────┘
-       │
-       ├─ tx.user.findUnique({id: u1}) ──────►
-       │                                       │
-       ├─ tx.event.findUnique({id: e1}) ─────► Database
-       │                                       │ PostgreSQL
-       ├─ tx.registration.create({...}) ─────►
-       │                                       │
-       └─ tx.event.update({capacity--}) ─────►
-       │
-       ▼
+│
+├─ tx.user.findUnique({id: u1}) ──────►
+│ │
+├─ tx.event.findUnique({id: e1}) ─────► Database
+│ │ PostgreSQL
+├─ tx.registration.create({...}) ─────►
+│ │
+└─ tx.event.update({capacity--}) ─────►
+│
+▼
 ┌──────────────────────────────────┐
-│ All queries succeed ✓            │
-│ Commit transaction               │
-│ Database updated atomically      │
+│ All queries succeed ✓ │
+│ Commit transaction │
+│ Database updated atomically │
 └──────┬───────────────────────────┘
-       │
-       ▼
+│
+▼
 ┌──────────────────────────────────┐
-│ Return success response:          │
-│ {                                 │
-│   success: true,                 │
-│   registration: {...},           │
-│   event: { capacity: 49 },       │
-│   durationMs: 15                 │
-│ }                                │
+│ Return success response: │
+│ { │
+│ success: true, │
+│ registration: {...}, │
+│ event: { capacity: 49 }, │
+│ durationMs: 15 │
+│ } │
 └──────┬───────────────────────────┘
-       │
-       ▼
+│
+▼
 ┌──────────────────────────────────┐
-│ API sends JSON response           │
-│ Client displays confirmation      │
+│ API sends JSON response │
+│ Client displays confirmation │
 └──────────────────────────────────┘
+
 ```
 
 ---
@@ -364,15 +399,16 @@ PRODUCTION MONITORING STACK (Recommended)
 ## File Dependencies & Relationships
 
 ```
+
 src/app/api/events/register/route.ts
 ├── imports: "@/lib/prisma"
-│   └── src/lib/prisma.ts
-│       └── config: logging, middleware
+│ └── src/lib/prisma.ts
+│ └── config: logging, middleware
 │
 ├── imports: "@/lib/eventRegistration"
-│   └── src/lib/eventRegistration.ts
-│       ├── imports: "@/lib/prisma"
-│       └── exports: registerUserForEvent()
+│ └── src/lib/eventRegistration.ts
+│ ├── imports: "@/lib/prisma"
+│ └── exports: registerUserForEvent()
 │
 └── Uses: prisma client + transaction functions
 
@@ -380,16 +416,16 @@ src/app/api/events/register/route.ts
 
 src/lib/queryOptimizations.ts
 ├── imports: "@/lib/prisma"
-│   └── src/lib/prisma.ts
+│ └── src/lib/prisma.ts
 │
 └── exports:
-    ├── getUpcomingEventsOptimized()
-    ├── getEventsPaginated()
-    ├── getOrganizerEventsWithRegistrations()
-    ├── bulkCreateUsers()
-    ├── bulkUpdateEventDates()
-    ├── getUniqueOrganizers()
-    └── getUserProfileWithEvents()
+├── getUpcomingEventsOptimized()
+├── getEventsPaginated()
+├── getOrganizerEventsWithRegistrations()
+├── bulkCreateUsers()
+├── bulkUpdateEventDates()
+├── getUniqueOrganizers()
+└── getUserProfileWithEvents()
 
 ---
 
@@ -413,6 +449,7 @@ Documentation
 ├── QUICK_START.md (5-minute setup)
 ├── IMPLEMENTATION_SUMMARY.md (overview)
 └── COMPLETION_CHECKLIST.md (validation)
+
 ```
 
 ---
@@ -420,36 +457,88 @@ Documentation
 ## Performance Benchmarks
 
 ```
+
 BEFORE Optimizations:
 ┌────────────────────────────────────┬──────────┐
-│ Operation                          │ Time     │
+│ Operation │ Time │
 ├────────────────────────────────────┼──────────┤
-│ Get upcoming events (no index)     │ 250ms    │
-│ User login by email (no index)     │ 150ms    │
-│ List user registrations (no index) │ 180ms    │
-│ Get event attendees (no index)     │ 200ms    │
-│ User fetch 1000 records (no page)  │ 500ms    │
-│ Memory for 1M rows                 │ 1GB      │
+│ Get upcoming events (no index) │ 250ms │
+│ User login by email (no index) │ 150ms │
+│ List user registrations (no index) │ 180ms │
+│ Get event attendees (no index) │ 200ms │
+│ User fetch 1000 records (no page) │ 500ms │
+│ Memory for 1M rows │ 1GB │
 └────────────────────────────────────┴──────────┘
 
 AFTER Optimizations:
 ┌────────────────────────────────────┬──────────┬──────────┐
-│ Operation                          │ Time     │ Speed    │
+│ Operation │ Time │ Speed │
 ├────────────────────────────────────┼──────────┼──────────┤
-│ Get upcoming events (index on date)│ 5ms      │ 50x ⚡   │
-│ User login (index on email)        │ 10ms     │ 15x ⚡   │
-│ List registrations (index on userId)│ 8ms     │ 22x ⚡   │
-│ Get attendees (index on eventId)   │ 12ms     │ 17x ⚡   │
-│ User fetch (with pagination)       │ 20ms     │ 25x ⚡   │
-│ Memory with pagination (20 per page)│ 200MB   │ 5x ⚡    │
-│ N+1 prevention (1 query vs 101)    │ 5ms      │ 200x ⚡  │
-│ Bulk create (createMany)           │ 50ms     │ 100x ⚡  │
+│ Get upcoming events (index on date)│ 5ms │ 50x ⚡ │
+│ User login (index on email) │ 10ms │ 15x ⚡ │
+│ List registrations (index on userId)│ 8ms │ 22x ⚡ │
+│ Get attendees (index on eventId) │ 12ms │ 17x ⚡ │
+│ User fetch (with pagination) │ 20ms │ 25x ⚡ │
+│ Memory with pagination (20 per page)│ 200MB │ 5x ⚡ │
+│ N+1 prevention (1 query vs 101) │ 5ms │ 200x ⚡ │
+│ Bulk create (createMany) │ 50ms │ 100x ⚡ │
 └────────────────────────────────────┴──────────┴──────────┘
 
 Average Improvement: 50-100x faster ⚡
 Memory Reduction: 80% smaller payloads 📉
-```
+
+````
 
 ---
 
 This architecture is **production-ready** and follows industry best practices!
+
+---
+
+## API Documentation
+
+The system includes a comprehensive OpenAPI (Swagger) documentation.
+
+### Accessing the Docs
+- **Swagger UI**: Visit `[YOUR_DOMAIN]/api-docs` (e.g., `http://localhost:3000/api-docs`) to view the interactive API playground.
+- **Specification**: The OpenAPI spec is generated dynamically from JSDoc annotations in the route files using `next-swagger-doc`.
+
+### Adding New Endpoints
+To document a new endpoint, add a JSDoc comment with the `@swagger` tag above the route handler in `route.ts`.
+
+Example:
+```typescript
+/**
+ * @swagger
+ * /api/example:
+ *   get:
+ *     description: Returns an example response
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+export async function GET() { ... }
+````
+
+## Maintenance and Onboarding
+
+### Setting Up for New Contributors
+
+1. **Clone the repository**: `git clone <repo-url>`
+2. **Install dependencies**: `npm install`
+3. **Setup Environment**: Copy `.env.example` to `.env.local` and fill in secrets (ask the team lead for dev secrets).
+4. **Database Setup**: Run `npm run prisma:migrate` followed by `npm run prisma:seed` to populate the dev database.
+
+### How to Add New Endpoints
+
+1. Create a new route file in `src/app/api/<resource>/route.ts`.
+2. Implement your handler function (GET, POST, etc.).
+3. Add `@swagger` JSDoc comments above the handler.
+   - Specify `summary`, `description`, `tags`, and `responses`.
+4. Run `npm run dev` and verify your new endpoint appears at `/api-docs`.
+
+### Documentation Update Checklist
+
+- [ ] Did you add JSDoc to new API routes?
+- [ ] Did you update `ARCHITECTURE.md` if you changed the system design?
+- [ ] Did you bump the version in `package.json` if this is a release?
