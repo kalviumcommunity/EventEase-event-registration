@@ -2,6 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getConfig } from '@/lib/config';
 import { VaultConfigurationError } from '@/lib/secrets';
 
+/**
+ * @swagger
+ * /api/admin/debug-secrets:
+ *   get:
+ *     summary: Verify environment secrets
+ *     description: Checks for the existence of required environment secrets without exposing their values.
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       200:
+ *         description: Secrets verification status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 availableSecrets:
+ *                   type: integer
+ *                   example: 5
+ *                 keys:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Error verifying secrets
+ */
 export async function GET(_request: NextRequest) {
   try {
     // Get configuration to verify secrets are accessible

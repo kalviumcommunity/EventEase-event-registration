@@ -7,6 +7,19 @@
 | `AZURITE_CONNECTION_STRING` | Local Azurite connection (dev only) | `UseDevelopmentStorage=true` |
 | `AZURE_STORAGE_CONTAINER_NAME` | Azure blob container name | `uploads` |
 
+## Documentation
+
+### API Documentation
+
+The API is documented using Swagger/OpenAPI.
+
+- **URL**: [/api-docs](http://localhost:3000/api-docs)
+- **Specification**: Auto-generated from JSDoc comments.
+- **Version**: 1.0.0
+- **Last Updated**: 2025-01-30
+
+> **Note**: Ensure the development server is running (`npm run dev`) to access the documentation locally.
+
 ## Infrastructure & Scaling
 
 ### Horizontal Autoscaling Benefits for EventEase
